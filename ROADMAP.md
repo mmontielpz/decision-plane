@@ -2,140 +2,108 @@
 
 ## Purpose
 
-This roadmap describes the **incremental development of an end-to-end ML system** focused on risk-aware decision making.
+This roadmap outlines the **incremental development of an end-to-end ML system** focused on risk-aware decision making.
 
-The roadmap is organized by **system maturity**, not by deadlines.
-Each phase produces a concrete, reviewable outcome before moving forward.
+Each phase represents a **system milestone**, not a delivery date.
+Implementation advances only when the previous phase is complete and reviewable.
 
 ---
 
 ## Phase 0 — Problem and System Definition
 
 **Objective**
-Establish a clear, shared understanding of the problem, the system boundaries, and the decisions the ML system is expected to support.
+Define the problem, system boundaries, and decision logic before implementation.
 
-No modeling or implementation occurs in this phase.
+**Deliverables**
 
----
+* problem framing and decision context
+* defined system inputs and outputs
+* documented constraints and trade-offs
+* clear success criteria for the MVP
 
-### 0.1 Problem Framing
-
-Define the problem in operational terms:
-
-* What type of decisions does the system support?
-* Who or what consumes the system output?
-* What happens if the system makes a wrong decision?
-* Which failures are unacceptable vs tolerable?
-
-Focus on **decision impact**, not prediction accuracy.
+**Status**
+Completed
 
 ---
 
-### 0.2 System Inputs
+## Phase 1 — Data Ingestion and Storage
 
-Identify and document:
+**Objective**
+Establish reliable and reproducible data ingestion.
 
-* data sources (documents, metadata, signals)
-* expected formats and variability
-* ingestion mode (batch, streaming, hybrid)
-* assumptions about data availability and quality
+**Deliverables**
 
-Explicitly note known data limitations and uncertainties.
-
----
-
-### 0.3 System Outputs
-
-Define what the system produces:
-
-* risk score definition
-* score range and interpretation
-* expected consumers (humans, downstream systems)
-* update frequency
-
-Avoid binary outputs unless explicitly justified.
+* continuous ingestion pipeline (simulated)
+* raw and processed data storage
+* basic validation and versioning
 
 ---
 
-### 0.4 Decision Logic
+## Phase 2 — Feature Engineering and Labeling
 
-Clarify how outputs are used:
+**Objective**
+Produce stable, versioned features and a usable labeling strategy.
 
-* thresholds and prioritization logic
-* cost asymmetry between false positives and false negatives
-* human-in-the-loop points
-* fallback behavior when confidence is low
+**Deliverables**
 
-This section anchors ML decisions to business reality.
-
----
-
-### 0.5 Constraints and Trade-offs
-
-Document non-negotiable constraints:
-
-* latency requirements
-* scalability expectations
-* interpretability needs
-* operational cost limits
-* regulatory or audit considerations (if any)
-
-Explicitly acknowledge trade-offs instead of optimizing everything.
+* feature pipeline
+* documented labeling assumptions
+* reproducible training dataset
 
 ---
 
-### 0.6 Success Criteria
+## Phase 3 — Modeling and Evaluation
 
-Define what “working” means at the system level:
+**Objective**
+Train and evaluate models aligned with decision cost and risk.
 
-* acceptable error profiles
-* stability over time
-* observability requirements
-* reproducibility expectations
+**Deliverables**
 
-Avoid single-metric definitions of success.
-
----
-
-### 0.7 Out of Scope
-
-Explicitly list what the system will **not** address in the MVP:
-
-* advanced optimization
-* novel model architectures
-* full automation without review
-* domain-specific tuning beyond the initial use case
-
-This prevents uncontrolled scope expansion.
+* strong baseline model
+* comparative model
+* cost-aware evaluation results
 
 ---
 
-### Phase 0 Deliverable
+## Phase 4 — Deployment
 
-A documented and reviewable system definition that:
+**Objective**
+Expose the system for batch and online inference.
 
-* clearly defines inputs, outputs, and decisions
-* makes assumptions explicit
-* exposes trade-offs
-* establishes a foundation for implementation
+**Deliverables**
 
-Only once this phase is complete does implementation begin.
+* batch scoring workflow
+* inference API
+* failure and fallback handling
 
 ---
 
-## Next Phases (High-Level Preview)
+## Phase 5 — Monitoring and Operations
 
-* **Phase 1 — Data Ingestion and Storage**
-* **Phase 2 — Feature Engineering and Labeling**
-* **Phase 3 — Modeling and Evaluation**
-* **Phase 4 — Deployment**
-* **Phase 5 — Monitoring and Operations**
-* **Phase 6 — Iteration and Learnings**
+**Objective**
+Ensure system observability and operational stability.
 
-Details for these phases are intentionally deferred until Phase 0 is finalized.
+**Deliverables**
+
+* data and prediction drift monitoring
+* latency and error tracking
+* logging and alerting
+
+---
+
+## Phase 6 — Iteration and Learnings
+
+**Objective**
+Capture learnings and guide future improvements.
+
+**Deliverables**
+
+* documented failures and limitations
+* retraining strategy
+* extension opportunities
 
 ---
 
 ## Status
 
-Current focus: **Phase 0 — Problem and System Definition**.
+Current focus: **Phase 1 — Data Ingestion and Storage**.
