@@ -4,8 +4,8 @@
 
 This repository implements an **end-to-end machine learning system** for **risk-aware decision making** under real-world constraints.
 
-The focus of this project is the **design and operation of an ML system**, not a single model.
-It covers the full lifecycle required to move from raw data to deployable, monitored decisions in production-like environments.
+The focus of this project is the **design, implementation, and operation of an ML system**, not a single model.
+It covers the lifecycle required to move from raw, unstructured data to deployable and observable ML-driven decisions in production-like environments.
 
 The system is designed to be reusable across domains, with an initial concrete application in enterprise document workflows.
 
@@ -22,17 +22,17 @@ They typically arise from **latent and evolving risks**, including:
 * missing or ambiguous information
 * anomalous patterns
 * delayed detection
-* gradual degradation of model behavior
+* gradual degradation of system behavior
 
 Many ML approaches frame this as a static classification problem.
 
 In practice, the challenge is **decision prioritization under uncertainty**, where:
 
 * errors have asymmetric cost
-* labels are noisy or delayed
+* labels are noisy, incomplete, or delayed
 * data distributions change over time
 * latency and reliability matter
-* business constraints influence outcomes
+* business constraints shape acceptable outcomes
 
 ---
 
@@ -49,22 +49,23 @@ It intentionally avoids:
 
 Instead, it emphasizes:
 
-* system boundaries
+* explicit system boundaries
 * operational constraints
-* explicit trade-offs
-* iteration over time
+* failure handling
+* reproducibility
+* incremental iteration over time
 
 ---
 
 ## System Scope
 
-The project covers the full ML lifecycle as an integrated system:
+The project covers the ML lifecycle as an integrated system:
 
 1. **Continuous Data Collection**
    Handling evolving and heterogeneous inputs.
 
 2. **Data Storage and Versioning**
-   Separation of raw, processed, and feature data with reproducibility in mind.
+   Separation of raw and processed data with traceability and reproducibility.
 
 3. **Feature Engineering**
    Feature design guided by stability, cost, and downstream impact.
@@ -73,16 +74,16 @@ The project covers the full ML lifecycle as an integrated system:
    Managing noisy labels, delayed feedback, and human-in-the-loop processes.
 
 5. **Model Training and Evaluation**
-   Strong baselines and evaluation aligned with cost and risk.
+   Strong baselines with evaluation aligned to risk and cost, not accuracy alone.
 
 6. **Deployment**
-   Batch and online inference with clear interfaces and failure handling.
+   Batch and online inference with explicit interfaces and failure handling.
 
 7. **Containerization**
    Reproducible environments using Docker.
 
 8. **CI/CD**
-   Automated testing and deployment workflows.
+   Automated testing and controlled deployment workflows.
 
 9. **Monitoring**
    Observability across data drift, prediction drift, latency, and system health.
@@ -96,16 +97,16 @@ The project covers the full ML lifecycle as an integrated system:
 
 The first application of the system focuses on **risk scoring for enterprise documents**.
 
-Rather than producing labels, the system outputs **risk scores** that support downstream actions such as:
+Rather than producing categorical labels, the system outputs **risk scores** that support downstream actions such as:
 
 * prioritization
 * escalation
 * routing
-* automated handling
+* partial or automated handling
 
 This use case was selected because it naturally involves:
 
-* ambiguous ground truth
+* ambiguous or incomplete ground truth
 * asymmetric cost of errors
 * evolving data distributions
 * operational constraints
@@ -122,9 +123,9 @@ The system is evaluated using multiple signals rather than a single metric:
 * robustness to data and concept drift
 * operational stability
 * reproducibility
-* ease of iteration
+* ease of iteration and change
 
-Known limitations and failures are documented explicitly.
+Known limitations and failure modes are documented explicitly.
 
 ---
 
@@ -133,15 +134,26 @@ Known limitations and failures are documented explicitly.
 This project is not intended to be:
 
 * a Kaggle-style experiment
-* a tutorial or walkthrough
+* a tutorial or step-by-step guide
 * a benchmark leaderboard
-* a research contribution
+* a research paper or novel algorithm proposal
 
-It is a practical system-oriented implementation.
+It is a practical, system-oriented implementation.
 
 ---
 
 ## Status
 
-Current focus: **problem formalization and system design**.
-Implementation is introduced incrementally, driven by system requirements rather than model experimentation.
+**Phase 1 completed**.
+
+Phase 1 delivered a production-oriented ingestion foundation, including:
+
+* a FastAPI ingestion service
+* explicit ingestion contracts
+* idempotent metadata persistence using SQLite
+* deterministic raw data storage
+* structured logging
+* explicit HTTP error handling
+* integration tests validating real system behavior
+
+The current focus is **incremental system expansion**, driven by operational requirements rather than model experimentation.
