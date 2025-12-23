@@ -31,3 +31,9 @@ db/*.db
 
 # Local test files
 dummy_document.txt
+
+# Phase 2 outputs
+data/processed/*
+data/features/*
+!data/processed/.gitkeep
+!data/features/.gitkeep
