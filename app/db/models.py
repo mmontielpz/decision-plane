@@ -9,7 +9,7 @@ def init_db():
         """
         CREATE TABLE IF NOT EXISTS ingestion_events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            document_id TEXT NOT NULL,
+            document_id TEXT NOT NULL UNIQUE,
             ingestion_timestamp TEXT NOT NULL,
             source_system TEXT,
             status TEXT NOT NULL
