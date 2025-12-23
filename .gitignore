@@ -23,3 +23,11 @@ env/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Runtime artifacts
+db/*.db
+*.sqlite
+*.sqlite3
+
+# Local test files
+dummy_document.txt
