@@ -1,9 +1,8 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from app.ingestion.schemas import IngestionRequest
 from app.db.database import get_connection
 from app.core.logger import get_logger
 from pathlib import Path
-from datetime import datetime
 import json
 import shutil
 import sqlite3
@@ -12,13 +11,25 @@ router = APIRouter()
 logger = get_logger("ingestion")
 
 
-@router.post("/ingest")
+@router.post("/ingest", status_code=status.HTTP_200_OK)
 async def ingest_document(
     metadata: str = Form(...),
     file: UploadFile = File(...)
 ):
-    metadata_obj = IngestionRequest.model_validate(json.loads(metadata))
+    # Parse and validate metadata
+    try:
+        metadata_obj = IngestionRequest.model_validate(json.loads(metadata))
+    except Exception as e:
+        logger.warning(
+            "metadata_validation_failed",
+            extra={"extra": {"error": str(e)}},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid metadata payload",
+        )
 
+    # Persist metadata (idempotent)
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -50,10 +61,21 @@ async def ingest_document(
             extra={"extra": {"document_id": metadata_obj.document_id}},
         )
 
+    except Exception as e:
+        conn.close()
+        logger.error(
+            "ingestion_db_error",
+            extra={"extra": {"error": str(e)}},
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to persist ingestion metadata",
+        )
+
     finally:
         conn.close()
 
-    # Raw storage (only if first ingestion)
+    # Raw storage (only on first ingestion)
     ingestion_date = metadata_obj.ingestion_timestamp.date().isoformat()
     source = metadata_obj.source_system or "unknown"
 
@@ -64,33 +86,41 @@ async def ingest_document(
     target_file = target_dir / file.filename
 
     if inserted:
-        if target_file.exists():
-            logger.warning(
-                "raw_file_exists",
-                extra={"extra": {"path": str(target_file)}},
+        try:
+            if not target_file.exists():
+                with target_file.open("wb") as buffer:
+                    shutil.copyfileobj(file.file, buffer)
+        except Exception as e:
+            logger.error(
+                "raw_storage_write_failed",
+                extra={"extra": {"path": str(target_file), "error": str(e)}},
             )
-        else:
-            with target_file.open("wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Failed to write raw file",
+            )
 
-        status = "received"
+        logger.info(
+            "ingestion_completed",
+            extra={
+                "extra": {
+                    "document_id": metadata_obj.document_id,
+                    "raw_path": str(target_file),
+                }
+            },
+        )
 
-    else:
-        status = "already_exists"
+        return {
+            "document_id": metadata_obj.document_id,
+            "status": "received",
+            "raw_path": str(target_file),
+        }
 
-    logger.info(
-        "ingestion_result",
-        extra={
-            "extra": {
-                "document_id": metadata_obj.document_id,
-                "status": status,
-                "raw_path": str(target_file),
-            }
+    # Duplicate case
+    raise HTTPException(
+        status_code=status.HTTP_409_CONFLICT,
+        detail={
+            "document_id": metadata_obj.document_id,
+            "status": "already_exists",
         },
     )
-
-    return {
-        "document_id": metadata_obj.document_id,
-        "status": status,
-        "raw_path": str(target_file),
-    }
