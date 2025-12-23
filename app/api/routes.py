@@ -62,7 +62,6 @@ async def ingest_document(
         )
 
     except Exception as e:
-        conn.close()
         logger.error(
             "ingestion_db_error",
             extra={"extra": {"error": str(e)}},
@@ -78,28 +77,34 @@ async def ingest_document(
     # Raw storage (only on first ingestion)
     ingestion_date = metadata_obj.ingestion_timestamp.date().isoformat()
     source = metadata_obj.source_system or "unknown"
-
     raw_base = Path("data/raw")
-    target_dir = raw_base / ingestion_date / source / metadata_obj.document_id
-    target_dir.mkdir(parents=True, exist_ok=True)
 
-    target_file = target_dir / file.filename
+    try:
+        target_dir = raw_base / ingestion_date / source / metadata_obj.document_id
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        target_file = target_dir / file.filename
+
+        if inserted and not target_file.exists():
+            with target_file.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+
+    except Exception as e:
+        logger.error(
+            "raw_storage_error",
+            extra={
+                "extra": {
+                    "path": str(target_dir),
+                    "error": str(e),
+                }
+            },
+        )
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to persist raw file",
+        )
 
     if inserted:
-        try:
-            if not target_file.exists():
-                with target_file.open("wb") as buffer:
-                    shutil.copyfileobj(file.file, buffer)
-        except Exception as e:
-            logger.error(
-                "raw_storage_write_failed",
-                extra={"extra": {"path": str(target_file), "error": str(e)}},
-            )
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Failed to write raw file",
-            )
-
         logger.info(
             "ingestion_completed",
             extra={
