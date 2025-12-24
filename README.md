@@ -142,18 +142,34 @@ It is a practical, system-oriented implementation.
 
 ---
 
+Perfecto.
+No hay que reescribir todo el README. **Solo actualizar la sección `Status`** para reflejar el cierre formal de Phase 2, manteniendo coherencia con el resto del documento.
+
+A continuación tienes **la versión final de la sección `Status`**, lista para **reemplazar únicamente esa sección**.
+
+---
+
 ## Status
 
-**Phase 1 completed**.
+**Phase 1 completed**
+Ingestion and raw storage foundation is implemented, including:
 
-Phase 1 delivered a production-oriented ingestion foundation, including:
-
-* a FastAPI ingestion service
+* FastAPI ingestion service
 * explicit ingestion contracts
 * idempotent metadata persistence using SQLite
 * deterministic raw data storage
 * structured logging
 * explicit HTTP error handling
-* integration tests validating real system behavior
+* integration tests validating ingestion behavior
 
-The current focus is **incremental system expansion**, driven by operational requirements rather than model experimentation.
+**Phase 2 completed**
+Processed storage and feature extraction foundation is implemented, including:
+
+* explicit processed and feature data contracts
+* batch processor for reproducible document processing
+* versioned processed and feature artifacts
+* persistent processing state tracking in SQLite
+* idempotent reprocessing and backfill support
+* integration tests validating batch processing behavior
+
+The system now provides a **complete pre-model ML system foundation**, and is ready to evolve into **Phase 3: labeling strategy and model development**, driven by operational and business constraints rather than experimentation alone.
