@@ -262,5 +262,53 @@ def init_db():
         """
     )
 
+        # -------------------------
+    # Phase 5: Feedback events
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS feedback_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at TEXT NOT NULL,
+
+            external_id TEXT NOT NULL,
+            source TEXT NOT NULL,
+
+            feedback_value TEXT NOT NULL,
+            confidence REAL,
+            notes TEXT,
+
+            UNIQUE (external_id, source)
+        );
+        """
+    )
+
+    # -------------------------
+    # Phase 5: Prediction ↔ Feedback linkage
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS prediction_feedback_links (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at TEXT NOT NULL,
+
+            feedback_id INTEGER NOT NULL,
+            prediction_event_id INTEGER NOT NULL,
+
+            FOREIGN KEY (feedback_id) REFERENCES feedback_events(id),
+            FOREIGN KEY (prediction_event_id) REFERENCES prediction_events(id),
+
+            UNIQUE (feedback_id, prediction_event_id)
+        );
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_feedback_links_prediction
+        ON prediction_feedback_links (prediction_event_id);
+        """
+    )
+
     conn.commit()
     conn.close()
