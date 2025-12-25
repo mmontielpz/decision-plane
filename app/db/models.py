@@ -1,4 +1,5 @@
 from app.db.database import get_connection
+from datetime import datetime
 
 
 def init_db():
@@ -48,6 +49,31 @@ def init_db():
             error_message TEXT,
             updated_at TEXT NOT NULL,
             FOREIGN KEY (last_run_id) REFERENCES processing_runs(run_id)
+        );
+        """
+    )
+
+    # -------------------------
+    # Phase 3: Label signals
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS labels (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            document_id TEXT NOT NULL,
+            label_value TEXT NOT NULL,
+            label_type TEXT NOT NULL,
+            label_source TEXT NOT NULL,
+            label_timestamp TEXT NOT NULL,
+            label_version INTEGER NOT NULL,
+            confidence REAL,
+            created_at TEXT NOT NULL,
+            UNIQUE (
+                document_id,
+                label_type,
+                label_source,
+                label_version
+            )
         );
         """
     )
