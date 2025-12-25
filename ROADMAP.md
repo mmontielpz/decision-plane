@@ -1,109 +1,87 @@
-# Roadmap — Risk-Aware ML System
+# Roadmap — Risk-Aware ML System (System Phases)
 
 ## Purpose
 
-This roadmap outlines the **incremental development of an end-to-end ML system** focused on risk-aware decision making.
+This roadmap documents the **technical evolution of the Risk-Aware ML System**
+from problem definition to a fully governed, auditable ML decision system.
 
-Each phase represents a **system milestone**, not a delivery date.
-Implementation advances only when the previous phase is complete and reviewable.
+Each phase represents a **closed system milestone**, not a timeline commitment.
 
 ---
 
-## Phase 0 — Problem and System Definition
+## Phase 0 — Problem and Decision Definition ✅
 
 **Objective**
-Define the problem, system boundaries, and decision logic before implementation.
-
-**Deliverables**
-
-* problem framing and decision context
-* defined system inputs and outputs
-* documented constraints and trade-offs
-* clear success criteria for the MVP
+Define the decision problem, system boundaries, and risk constraints.
 
 **Status**
 Completed
 
 ---
 
-## Phase 1 — Data Ingestion and Storage
+## Phase 1 — Data Ingestion and Raw Storage ✅
 
 **Objective**
-Establish reliable and reproducible data ingestion.
+Reliable, idempotent ingestion with deterministic storage.
 
-**Deliverables**
-
-* continuous ingestion pipeline (simulated)
-* raw and processed data storage
-* basic validation and versioning
+**Status**
+Completed
 
 ---
 
-## Phase 2 — Feature Engineering and Labeling
+## Phase 2 — Processing and Feature Materialization ✅
 
 **Objective**
-Produce stable, versioned features and a usable labeling strategy.
+Reproducible raw → processed → features pipeline.
 
-**Deliverables**
-
-* feature pipeline
-* documented labeling assumptions
-* reproducible training dataset
+**Status**
+Completed
 
 ---
 
-## Phase 3 — Modeling and Evaluation
+## Phase 3 — Labeling, Modeling, and Evaluation ✅
 
 **Objective**
-Train and evaluate models aligned with decision cost and risk.
+Risk-aware learning signals and cost-aware evaluation.
 
-**Deliverables**
-
-* strong baseline model
-* comparative model
-* cost-aware evaluation results
+**Status**
+Completed
 
 ---
 
-## Phase 4 — Deployment
+## Phase 4 — Serving and Prediction Infrastructure ✅
 
 **Objective**
-Expose the system for batch and online inference.
+Batch-first, auditable prediction serving.
 
-**Deliverables**
-
-* batch scoring workflow
-* inference API
-* failure and fallback handling
+**Status**
+Completed
 
 ---
 
-## Phase 5 — Monitoring and Operations
+## Phase 5 — Decision Quality, Monitoring, and Feedback Control ✅
 
 **Objective**
-Ensure system observability and operational stability.
+Govern ML decisions through drift detection, cost analysis, feedback, and replay.
 
-**Deliverables**
-
-* data and prediction drift monitoring
-* latency and error tracking
-* logging and alerting
+**Status**
+Completed
 
 ---
 
-## Phase 6 — Iteration and Learnings
+## Phase 6 — Policy and Automation (Explicitly Out of Scope)
 
-**Objective**
-Capture learnings and guide future improvements.
+**Note**
+Automated policy enforcement and retraining are intentionally excluded
+to preserve auditability and human governance.
 
-**Deliverables**
-
-* documented failures and limitations
-* retraining strategy
-* extension opportunities
+This phase is considered **optional and domain-dependent**.
 
 ---
 
-## Status
+## System Status
 
-Current focus: **Phase 1 — Data Ingestion and Storage**.
+The system is **functionally complete** as a governed ML decision platform.
+
+Future work focuses on **productization and user-facing experience**, not
+additional ML complexity.
