@@ -151,25 +151,16 @@ A continuación tienes **la versión final de la sección `Status`**, lista para
 
 ## Status
 
-**Phase 1 completed**
-Ingestion and raw storage foundation is implemented, including:
+**Phase 1 completed**  
+Ingestion and raw storage foundation implemented with explicit contracts,
+idempotency, structured logging, and integration tests.
 
-* FastAPI ingestion service
-* explicit ingestion contracts
-* idempotent metadata persistence using SQLite
-* deterministic raw data storage
-* structured logging
-* explicit HTTP error handling
-* integration tests validating ingestion behavior
+**Phase 2 completed**  
+Processed storage and feature materialization implemented with reproducible
+batch pipelines, persistent processing state, and test coverage.
 
-**Phase 2 completed**
-Processed storage and feature extraction foundation is implemented, including:
+**Phase 3 completed**  
+Label signals, offline datasets, baseline model training, and formal evaluation
+are implemented, enabling risk-aware decision modeling with full provenance.
 
-* explicit processed and feature data contracts
-* batch processor for reproducible document processing
-* versioned processed and feature artifacts
-* persistent processing state tracking in SQLite
-* idempotent reprocessing and backfill support
-* integration tests validating batch processing behavior
-
-The system now provides a **complete pre-model ML system foundation**, and is ready to evolve into **Phase 3: labeling strategy and model development**, driven by operational and business constraints rather than experimentation alone.
+The system is ready for **Phase 4: inference serving, monitoring, and feedback loops**.
