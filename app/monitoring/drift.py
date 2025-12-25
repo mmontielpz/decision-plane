@@ -18,14 +18,6 @@ def population_stability_index(
     current: Iterable[float],
     bins: int = 10,
 ) -> float:
-    """
-    Computes PSI between reference and current score distributions.
-
-    PSI interpretation (rule of thumb):
-        < 0.1   no drift
-        0.1–0.2 moderate drift
-        > 0.2   significant drift
-    """
     ref = list(reference)
     cur = list(current)
 
@@ -40,7 +32,7 @@ def population_stability_index(
 
     bin_width = (max_val - min_val) / bins
 
-    def _hist(values: List[float]) -> List[float]:
+    def _hist(values):
         counts = [0] * bins
         for v in values:
             idx = int((v - min_val) / bin_width)
@@ -54,13 +46,14 @@ def population_stability_index(
     cur_dist = _hist(cur)
 
     psi = 0.0
+    EPS = 1e-6
+
     for r, c in zip(ref_dist, cur_dist):
-        if r == 0 and c == 0:
-            continue
-        psi += (c - r) * (_safe_log(c) - _safe_log(r))
+        r_adj = max(r, EPS)
+        c_adj = max(c, EPS)
+        psi += (r_adj - c_adj) * math.log(r_adj / c_adj)
 
     return psi
-
 
 # -------------------------
 # Decision drift (rate shift)
