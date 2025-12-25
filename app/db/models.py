@@ -78,5 +78,69 @@ def init_db():
         """
     )
 
+        # -------------------------
+    # Phase 4: Prediction runs
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS prediction_runs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            run_key TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL,
+
+            model_name TEXT NOT NULL,
+            model_version TEXT NOT NULL,
+            feature_version TEXT NOT NULL,
+
+            dataset_key TEXT NOT NULL,
+            dataset_rows INTEGER,
+
+            status TEXT NOT NULL,
+            error_message TEXT,
+            context_json TEXT
+        );
+        """
+    )
+
+    # -------------------------
+    # Phase 4: Prediction events
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS prediction_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at TEXT NOT NULL,
+
+            run_id INTEGER NOT NULL,
+            document_id TEXT NOT NULL,
+
+            score REAL NOT NULL,
+            threshold REAL NOT NULL,
+            decision TEXT NOT NULL,
+
+            features_row_hash TEXT,
+            metadata_json TEXT,
+
+            FOREIGN KEY (run_id) REFERENCES prediction_runs(id),
+            UNIQUE (run_id, document_id)
+        );
+        """
+    )
+
+    # Helpful indexes for batch reads and audits
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_prediction_events_run_id
+        ON prediction_events (run_id);
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_prediction_events_document_id
+        ON prediction_events (document_id);
+        """
+    )
+
     conn.commit()
     conn.close()
