@@ -129,3 +129,26 @@ async def ingest_document(
             "status": "already_exists",
         },
     )
+
+def test_get_document_detail(client, clean_state):
+    # Seed mínimo
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO ingestion_events (
+            document_id,
+            ingestion_timestamp,
+            source_system,
+            status
+        ) VALUES (?, ?, ?, ?)
+        """,
+        ("doc-001", "2025-01-10T12:00:00", "test", "received"),
+    )
+
+    conn.commit()
+    conn.close()
+
+    res = client.get("/api/documents/doc-001")
+    assert res.status_code == 200
