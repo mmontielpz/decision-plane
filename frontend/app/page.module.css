@@ -1,0 +1,67 @@
+/* frontend/app/page.module.css */
+
+.container {
+  padding: 2.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  padding: 1.25rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.cardLabel {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.cardValue {
+  font-size: 1.75rem;
+  font-weight: bold;
+}
+
+.primaryActionSection {
+  margin-bottom: 2.5rem;
+}
+
+.primaryButton {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  background-color: #000;
+  color: #fff;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.latestTitle {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.latestCardLink {
+  display: block;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.muted {
+  color: #555;
+  margin-top: 0.25rem;
+}
