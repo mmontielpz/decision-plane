@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { fetchDocuments } from "@/services/documents";
 import { DocumentRow } from "@/types/document";
+import styles from "./page.module.css";
 
 export default async function HomePage() {
   let documents: DocumentRow[] = [];
@@ -12,7 +13,6 @@ export default async function HomePage() {
   try {
     documents = await fetchDocuments();
   } catch {
-    // Home should not crash; show empty state instead
     documents = [];
   }
 
@@ -28,29 +28,47 @@ export default async function HomePage() {
     })[0];
 
   return (
-    <main style={{ padding: "2rem" }}>
-      <h1>Risk-Aware ML System</h1>
+    <main className={styles.container}>
+      <h1 className={styles.title}>Risk-Aware ML System</h1>
 
-      <section style={{ marginTop: "2rem" }}>
-        <h2>System Overview</h2>
-        <ul>
-          <li>Total documents: {total}</li>
-          <li>Processed: {processed}</li>
-          <li>Needs review: {needsReview}</li>
-        </ul>
+      {/* Metrics */}
+      <section className={styles.metricsGrid}>
+        <div className={styles.card}>
+          <div className={styles.cardLabel}>Total Documents</div>
+          <div className={styles.cardValue}>{total}</div>
+        </div>
+
+        <div className={styles.card}>
+          <div className={styles.cardLabel}>Processed</div>
+          <div className={styles.cardValue}>{processed}</div>
+        </div>
+
+        <div className={styles.card}>
+          <div className={styles.cardLabel}>Needs Review</div>
+          <div className={styles.cardValue}>{needsReview}</div>
+        </div>
       </section>
 
-      <section style={{ marginTop: "2rem" }}>
-        <Link href="/documents">
+      {/* Primary action */}
+      <section className={styles.primaryActionSection}>
+        <Link href="/documents" className={styles.primaryButton}>
           View Documents
         </Link>
       </section>
 
-      <section style={{ marginTop: "2rem" }}>
-        <h3>Latest Document</h3>
+      {/* Latest document */}
+      <section>
+        <h2 className={styles.latestTitle}>Latest Document</h2>
+
         {latestDocument ? (
-          <Link href={`/documents/${latestDocument.document_id}`}>
-            {latestDocument.document_id}
+          <Link
+            href={`/documents/${latestDocument.document_id}`}
+            className={styles.latestCardLink}
+          >
+            <strong>{latestDocument.document_id}</strong>
+            <div className={styles.muted}>
+              Status: {latestDocument.status}
+            </div>
           </Link>
         ) : (
           <p>No documents ingested yet.</p>
