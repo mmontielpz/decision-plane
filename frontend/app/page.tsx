@@ -7,10 +7,19 @@ import { fetchDocuments } from "@/services/documents";
 import { DocumentRow } from "@/types/document";
 import styles from "./page.module.css";
 
+// async function devDelay(ms: number) {
+//   if (process.env.NODE_ENV === "development") {
+//    await new Promise((res) => setTimeout(res, ms));
+//  }
+// }
+
 export default async function HomePage() {
   let documents: DocumentRow[] = [];
 
   try {
+
+    // await devDelay(1500);
+
     documents = await fetchDocuments();
   } catch {
     documents = [];
