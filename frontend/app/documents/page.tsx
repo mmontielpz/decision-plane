@@ -1,5 +1,7 @@
 // frontend/app/documents/page.tsx
 
+export const dynamic = "force-dynamic";
+
 import { fetchDocuments } from "@/services/documents";
 import { DocumentRow } from "@/types/document";
 
