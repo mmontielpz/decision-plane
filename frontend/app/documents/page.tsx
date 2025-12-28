@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
 
 import { fetchDocuments } from "@/services/documents";
 import { DocumentRow } from "@/types/document";
+import Link from "next/link";
 
 export default async function DocumentsPage() {
   let documents: DocumentRow[] = [];
@@ -45,7 +46,11 @@ export default async function DocumentsPage() {
           <tbody>
             {documents.map((doc) => (
               <tr key={doc.document_id}>
-                <td>{doc.document_id}</td>
+                <td>
+                  <Link href={`/documents/${doc.document_id}`}>
+                    {doc.document_id}
+                  </Link>
+                </td>
                 <td>{doc.status}</td>
                 <td>{doc.decision ?? "-"}</td>
                 <td>
@@ -60,4 +65,3 @@ export default async function DocumentsPage() {
     </main>
   );
 }
-
