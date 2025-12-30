@@ -1,4 +1,7 @@
+// frontend/app/documents/[document_id]/page.tsx
+
 import { fetchDocument } from "@/services/documents";
+import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -19,26 +22,36 @@ export default async function DocumentDetailPage({ params }: Props) {
         <h1>Document {doc.document_id}</h1>
 
         <section>
-          <p><strong>Status:</strong> {doc.status}</p>
-          <p><strong>Decision:</strong> {doc.decision ?? "-"}</p>
-          <p><strong>Score:</strong> {doc.score ?? "-"}</p>
-          <p><strong>Last Updated:</strong> {doc.last_updated ?? "-"}</p>
+          <p>
+            <strong>Status:</strong> {doc.status}
+          </p>
+          <p>
+            <strong>Decision:</strong> {doc.decision ?? "-"}
+          </p>
+          <p>
+            <strong>Score:</strong> {doc.score ?? "-"}
+          </p>
+          <p>
+            <strong>Last Updated:</strong> {doc.last_updated ?? "-"}
+          </p>
         </section>
 
         <hr />
 
         <section>
-          <p><strong>Processed Path:</strong> {doc.processed_path ?? "-"}</p>
-          <p><strong>Feature Path:</strong> {doc.feature_path ?? "-"}</p>
+          <p>
+            <strong>Processed Path:</strong>{" "}
+            {doc.processed_path ?? "-"}
+          </p>
+          <p>
+            <strong>Feature Path:</strong>{" "}
+            {doc.feature_path ?? "-"}
+          </p>
         </section>
       </main>
     );
-  } catch (e: any) {
-    return (
-      <main style={{ padding: "2rem" }}>
-        <h1>Document not found</h1>
-        <p>{e.message}</p>
-      </main>
-    );
+  } catch {
+    // 🔑 Activa el 404 nativo de Next.js
+    notFound();
   }
 }
