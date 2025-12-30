@@ -37,3 +37,8 @@ data/processed/*
 data/features/*
 !data/processed/.gitkeep
 !data/features/.gitkeep
+
+# SQLite databases (backend)
+backend/db/*.db
+backend/db/*.sqlite
+backend/db/*.sqlite3
