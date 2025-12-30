@@ -1,9 +1,13 @@
-# Python bytecode
+# =========================
+# Python / Runtime
+# =========================
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Virtual environments
+# =========================
+# Virtual Environments
+# =========================
 .env
 .venv
 venv/
@@ -13,27 +17,49 @@ env/
 *.conda
 .condarc
 
-# Pytest
+# =========================
+# Testing
+# =========================
 .pytest_cache/
 
+# =========================
 # IDEs / Editors
+# =========================
 .vscode/
 .idea/
 
-# OS files
+# =========================
+# OS Files
+# =========================
 .DS_Store
 Thumbs.db
 
-# Runtime artifacts
-db/*.db
+# =========================
+# Databases (NEVER COMMIT)
+# =========================
+*.db
 *.sqlite
 *.sqlite3
 
-# Local test files
-dummy_document.txt
+# Explicit backend DB ignore
+backend/db/*.db
+backend/db/*.sqlite
+backend/db/*.sqlite3
 
-# Phase 2 outputs
-data/processed/*
-data/features/*
-!data/processed/.gitkeep
-!data/features/.gitkeep
+# =========================
+# Runtime / Generated Data
+# =========================
+data/
+backend/data/raw/*
+backend/data/processed/*
+backend/data/features/*
+
+# Keep directory structure
+!backend/data/raw/.gitkeep
+!backend/data/processed/.gitkeep
+!backend/data/features/.gitkeep
+
+# =========================
+# Local-only artifacts
+# =========================
+dummy_document.txt
