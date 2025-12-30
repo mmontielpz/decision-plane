@@ -4,9 +4,9 @@ import shutil
 import pytest
 from fastapi.testclient import TestClient
 
-# Ensure project root is importable
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT))
+# Ensure backend root is importable
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(BACKEND_ROOT))
 
 from app.main import app
 from app.db.models import init_db
@@ -20,24 +20,22 @@ def client():
 @pytest.fixture(autouse=True)
 def clean_state():
     """
-    Ensure a clean and deterministic state for each test run.
-    This fixture:
-    - Removes the SQLite database file
-    - Removes raw storage directories
-    - Re-initializes the database schema explicitly
+    Ensure a clean and deterministic state for each test.
+
+    - Removes the SQLite database file used by backend
+    - Removes raw storage directory
+    - Re-initializes database schema
     """
 
-    # Remove SQLite database if it exists
-    db_path = Path("db/metadata.db")
+    # Correct paths AFTER backend refactor
+    db_path = BACKEND_ROOT / "db" / "metadata.db"
+    raw_path = BACKEND_ROOT / "data" / "raw"
+
     if db_path.exists():
         db_path.unlink()
 
-    # Remove raw storage directory if it exists
-    raw_path = Path("data/raw")
     if raw_path.exists():
         shutil.rmtree(raw_path)
 
-    # Explicitly initialize database schema
     init_db()
-
     yield
