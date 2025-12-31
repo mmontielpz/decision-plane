@@ -54,7 +54,7 @@ export default async function DocumentsPage() {
                 <td>{doc.status}</td>
                 <td>{doc.decision ?? "-"}</td>
                 <td>
-                  {doc.score !== null ? doc.score.toFixed(2) : "-"}
+                  {typeof doc.score === "number" ? doc.score.toFixed(2) : "-"}
                 </td>
                 <td>{doc.last_updated ?? "-"}</td>
               </tr>
