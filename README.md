@@ -1,131 +1,117 @@
-# Risk-Aware ML System
+# Risk-Aware Document Processing System
 
 ## Overview
 
-This repository implements an **end-to-end machine learning system** for **risk-aware decision making** under real-world constraints.
+This repository implements a **risk-aware document processing system** built on top of a **fully governed machine learning infrastructure**.
 
-The focus of this project is the **design, implementation, and operation of an ML system**, not a single model.
-It covers the lifecycle required to move from raw, unstructured data to deployable and observable ML-driven decisions in production-like environments.
+The focus of this project is not a single model, but the **design, implementation, and operation of a production-grade ML system** that supports document-centric workflows under uncertainty and asymmetric risk.
 
-The system is designed to be reusable across domains, with an initial concrete application in enterprise document workflows.
+The system covers the full lifecycle required to move from raw, unstructured documents to **auditable, explainable, and reproducible system signals**, exposed through a minimal user-facing product.
 
 ---
 
 ## Problem Statement
 
-Organizations process large volumes of operational documents such as contracts, invoices, purchase orders, and compliance artifacts.
+Organizations process large volumes of operational documents where failures rarely originate from obvious errors.
 
-Operational issues rarely originate from obvious errors.
-They typically arise from **latent and evolving risks**, including:
+Instead, risk accumulates through:
 
-* subtle inconsistencies
-* missing or ambiguous information
-* anomalous patterns
-* delayed detection
+* incomplete or ambiguous information
+* low-quality or noisy inputs (e.g. scans, OCR artifacts)
+* inconsistent structure across documents
+* delayed or partial feedback
 * gradual degradation of system behavior
 
 Many ML approaches frame this as a static classification problem.
 
-In practice, the challenge is **decision prioritization under uncertainty**, where:
+In practice, the challenge is **risk-aware document processing**, where:
 
 * errors have asymmetric cost
-* labels are noisy, incomplete, or delayed
-* data distributions change over time
-* latency and reliability matter
-* business constraints shape acceptable outcomes
+* labels are noisy, incomplete, or unavailable
+* data distributions evolve
+* system reliability and traceability matter
+* automation must be constrained
 
 ---
 
 ## Project Motivation
 
-This project exists to reflect how ML systems are **built, deployed, and maintained** beyond experimentation.
+This project exists to demonstrate how **real ML systems are engineered**, not how models are trained in isolation.
 
 It intentionally avoids:
 
 * toy datasets
 * notebook-only workflows
 * accuracy-only evaluation
-* model-centric design
+* model-centric abstractions
 
 Instead, it emphasizes:
 
 * explicit system boundaries
-* operational constraints
-* failure handling
-* reproducibility
-* incremental iteration over time
+* deterministic processing
+* auditability and replay
+* controlled CI/CD
+* incremental productization
 
 ---
 
 ## System Scope
 
-The project covers the ML lifecycle as an integrated system:
+The system is implemented as an **integrated ML platform**, covering:
 
-1. **Continuous Data Collection**
-   Handling evolving and heterogeneous inputs.
+1. **Document Ingestion**
+   Deterministic, idempotent ingestion of unstructured documents.
 
-2. **Data Storage and Versioning**
-   Separation of raw and processed data with traceability and reproducibility.
+2. **Raw and Processed Storage**
+   Clear separation of raw inputs, processed artifacts, and metadata.
 
-3. **Feature Engineering**
-   Feature design guided by stability, cost, and downstream impact.
+3. **Processing and Feature Materialization**
+   Reproducible pipelines for OCR output, parsing, and feature extraction.
 
-4. **Labeling Strategy**
-   Managing noisy labels, delayed feedback, and human-in-the-loop processes.
+4. **Classification and Signals**
+   Generic document classification and explicit quality or risk indicators.
 
-5. **Model Training and Evaluation**
-   Strong baselines with evaluation aligned to risk and cost, not accuracy alone.
+5. **Serving**
+   Batch-first, auditable serving of document-level outputs.
 
-6. **Deployment**
-   Batch and online inference with explicit interfaces and failure handling.
+6. **Monitoring and Feedback Control**
+   Drift detection, error analysis, and replayable decision analysis.
 
 7. **Containerization**
-   Reproducible environments using Docker.
+   Reproducible runtime environments using Docker.
 
 8. **CI/CD**
-   Automated testing and controlled deployment workflows.
+   Automated testing, build validation, and controlled delivery of artifacts.
 
-9. **Monitoring**
-   Observability across data drift, prediction drift, latency, and system health.
-
-10. **Iteration**
-    Continuous improvement informed by monitoring and feedback.
+The ML system acts as **infrastructure**, not the product itself.
 
 ---
 
-## Initial Use Case: Document Risk Scoring
+## Product Layer
 
-The first application of the system focuses on **risk scoring for enterprise documents**.
+On top of the ML system, this repository exposes a **minimal document intelligence product (V1)** that allows users to:
 
-Rather than producing categorical labels, the system outputs **risk scores** that support downstream actions such as:
+* upload and ingest documents
+* explore document collections
+* inspect extracted content and metadata
+* understand classification and system signals
+* identify quality or risk issues explicitly
 
-* prioritization
-* escalation
-* routing
-* partial or automated handling
-
-This use case was selected because it naturally involves:
-
-* ambiguous or incomplete ground truth
-* asymmetric cost of errors
-* evolving data distributions
-* operational constraints
-
-The underlying architecture remains applicable beyond this domain.
+The product is intentionally **non-autonomous** and preserves human oversight.
 
 ---
 
 ## Evaluation Criteria
 
-The system is evaluated using multiple signals rather than a single metric:
+The system is evaluated using multiple signals, not a single metric:
 
-* decision quality under cost constraints
-* robustness to data and concept drift
-* operational stability
-* reproducibility
-* ease of iteration and change
+* clarity and explainability of outputs
+* robustness to noisy and evolving data
+* determinism and reproducibility
+* observability of failure modes
+* engineering discipline across CI/CD
 
-Known limitations and failure modes are documented explicitly.
+Known limitations and trade-offs are documented explicitly.
 
 ---
 
@@ -134,33 +120,19 @@ Known limitations and failure modes are documented explicitly.
 This project is not intended to be:
 
 * a Kaggle-style experiment
-* a tutorial or step-by-step guide
-* a benchmark leaderboard
-* a research paper or novel algorithm proposal
-
-It is a practical, system-oriented implementation.
-
----
-
-Perfecto.
-No hay que reescribir todo el README. **Solo actualizar la sección `Status`** para reflejar el cierre formal de Phase 2, manteniendo coherencia con el resto del documento.
-
-A continuación tienes **la versión final de la sección `Status`**, lista para **reemplazar únicamente esa sección**.
+* a generic OCR tool
+* a dashboard-heavy MLOps platform
+* an autonomous decision engine
+* a research benchmark or novel algorithm proposal
 
 ---
 
 ## Status
 
-**Phase 1 completed**  
-Ingestion and raw storage foundation implemented with explicit contracts,
-idempotency, structured logging, and integration tests.
+**Phases 0–5 completed**
+The underlying ML system is fully implemented as a governed, auditable decision infrastructure, including ingestion, processing, modeling, serving, and monitoring.
 
-**Phase 2 completed**  
-Processed storage and feature materialization implemented with reproducible
-batch pipelines, persistent processing state, and test coverage.
+**Phase 6 in progress**
+The system is being exposed as a **Risk-Aware Document Processing product (V1)**, focused on usability, traceability, and explicit risk signaling.
 
-**Phase 3 completed**  
-Label signals, offline datasets, baseline model training, and formal evaluation
-are implemented, enabling risk-aware decision modeling with full provenance.
-
-The system is ready for **Phase 4: inference serving, monitoring, and feedback loops**.
+The project is **functionally complete at the system level** and actively transitioning into a product-grade document intelligence platform.
