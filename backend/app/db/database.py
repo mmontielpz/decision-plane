@@ -9,7 +9,7 @@ def _resolve_database_path() -> Path:
 
     Priority:
     1. DATABASE_PATH env var
-    2. Default: backend/db/metadata.db
+    2. Default: backend/data/db/metadata.db (canonical)
 
     Ensures the parent directory exists.
     """
@@ -18,21 +18,20 @@ def _resolve_database_path() -> Path:
     if db_path_env:
         db_path = Path(db_path_env).expanduser().resolve()
     else:
-        # Default relative to backend/
-        project_root = Path(__file__).resolve().parents[3]
-        db_path = project_root / "backend" / "db" / "metadata.db"
+        repo_root = Path(__file__).resolve().parents[3]
+        db_path = repo_root / "backend" / "data" / "db" / "metadata.db"
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
     return db_path
 
 
-DB_PATH = _resolve_database_path()
-
-
 def get_connection() -> sqlite3.Connection:
     """
     Return a SQLite connection with row factory enabled.
+    Database path is resolved at call time to allow test isolation.
     """
-    conn = sqlite3.connect(str(DB_PATH))
+    db_path = _resolve_database_path()
+    print(">>> SQLITE CONNECT PATH:", db_path)
+    conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     return conn

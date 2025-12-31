@@ -1,11 +1,11 @@
 services:
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: risk-backend
     volumes:
-      - ./backend/data:/data
+      - ./backend/data:/app/backend/data
     env_file:
       - backend/.env.example
     ports:
@@ -13,8 +13,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     container_name: risk-frontend
     depends_on:
       - backend
