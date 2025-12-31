@@ -1,138 +1,157 @@
-# Product Vision — Risk-Aware ML System
+Correcto trabajar este documento ahora. El **contenido actual es bueno**, pero está **desalineado** con la decisión que ya tomaste:
+
+* El producto **ya no es “Risk-Aware ML System” genérico**
+* Tampoco debe comprometer **Legal / Compliance** como dominio público
+* Debe reflejar **Option C**: core genérico, reutilizable, demostrable
+
+Voy a **reescribir el Product Vision**, manteniendo tu rigor, **eliminando dominio sensible**, y cerrándolo como **visión de producto V1**, no como roadmap futuro.
+
+---
+
+# Product Vision — Risk-Aware Document Processing System
 
 ## Overview
 
-The Risk-Aware ML System is a **governed AI decision platform** designed to support
-high-stakes, asymmetric-risk decisions where accuracy alone is insufficient.
+The **Risk-Aware Document Processing System** is a **governed document intelligence platform** designed to help users **ingest, understand, and manage critical documents under uncertainty and asymmetric risk**.
 
 The system prioritizes:
-* decision usefulness over model performance
-* auditability over automation
-* human-in-the-loop governance over autonomous control
 
-This repository represents the **technical backbone** of the product.
-The goal of this vision is to guide its evolution into a **demonstrable AI product**
-suitable for real users, real constraints, and real accountability.
+* decision clarity over raw automation
+* explicit risk signaling over opaque predictions
+* auditability and traceability over autonomous behavior
+
+This repository represents the **public, domain-agnostic core** of the product.
+Its purpose is to demonstrate **how document intelligence systems should be engineered**, not to encode domain-specific business logic.
 
 ---
 
 ## Product Goal
 
-Transform a fully governed ML system (Phases 0–5) into a **visible, explainable,
-and operational AI product** that allows users to:
+Expose a fully governed ML system as a **usable document processing product** that allows users to:
 
-* understand automated decisions
-* provide feedback safely
-* monitor decision quality over time
-* evaluate risk and cost trade-offs explicitly
+* ingest and explore documents reliably
+* understand how documents are classified
+* identify potential quality or risk issues
+* interact with system outputs with confidence
 
-The product is intentionally designed to **avoid autonomous policy execution**
-and **automatic retraining**, preserving human oversight.
+The product is intentionally designed to **avoid autonomous decisions, policy execution, or self-modifying behavior**.
+Human interpretation and oversight are always preserved.
 
 ---
 
-## Initial Target Use Case
+## Target Use Case (Generic)
 
-### Risk-Aware Legal and Compliance Document Review
+### Risk-Aware Document Management
 
 **Context**
 
-Organizations process large volumes of legal, compliance, and operational documents
-where incorrect decisions carry asymmetric costs.
+Organizations handle large volumes of documents where:
 
-Examples:
-* approving a risky document
-* missing a critical clause
-* over-escalating low-risk cases
+* structure varies
+* data quality is inconsistent
+* errors carry asymmetric costs
+* full automation is unsafe or undesirable
 
-**Decision Framing**
+Examples of document characteristics (non-domain-specific):
 
-* ACCEPT — low risk, no review required
-* REVIEW — requires human inspection
+* incomplete or malformed documents
+* low-quality scans or OCR noise
+* ambiguous document types
+* missing or inconsistent metadata
 
-The system assists reviewers by prioritizing attention, not replacing judgment.
+The system assists users by **organizing, classifying, and flagging documents**, not by making final decisions on their behalf.
 
 ---
 
 ## Target Users
 
-* Legal reviewers
-* Compliance analysts
-* Operations managers
-* Risk and audit stakeholders
+* Analysts reviewing document collections
+* Operators managing document workflows
+* Engineers or data teams validating document pipelines
+* Stakeholders requiring traceability and auditability
 
-The product is not designed for end consumers.
-It targets **internal decision-makers** operating under accountability constraints.
-
----
-
-## Core User Journey
-
-1. User uploads or selects a document
-2. System ingests and processes the document
-3. Batch prediction assigns a decision (ACCEPT / REVIEW)
-4. User inspects:
-   * decision
-   * confidence score
-   * relevant metadata
-5. User provides feedback (approve, reject, correction)
-6. System tracks:
-   * decision outcomes
-   * cost impact
-   * drift and degradation signals
-7. Users review monitoring summaries over time
-
-At no point does the system automatically change its behavior without explicit intent.
+The product is designed for **internal, accountable users**, not end consumers.
 
 ---
 
-## Product Scope
+## Core User Journey (V1)
+
+1. User uploads documents into the system
+2. System ingests and processes documents deterministically
+3. Documents are:
+
+   * parsed
+   * classified (generic types)
+   * indexed for search
+4. System assigns:
+
+   * document type
+   * confidence indicators
+   * explicit risk or quality flags
+5. User explores documents through:
+
+   * search
+   * filters
+   * document detail views
+6. User inspects extracted content and system signals
+
+At no point does the system take autonomous actions or modify its behavior implicitly.
+
+---
+
+## Product Scope (V1)
 
 ### Included
 
 * Web-based user interface
-* Document ingestion and listing
-* Decision visualization (score + decision)
-* Human feedback capture
-* Decision quality monitoring summaries
-* Replay and counterfactual analysis (threshold changes)
+* Document upload and ingestion
+* OCR and text extraction (mocked but pluggable)
+* Generic document classification
+* Indexing and search
+* Explicit quality and risk flags
+* Deterministic, replayable processing
+* Seeded experimental datasets for demos and testing
+
+---
 
 ### Explicitly Excluded
 
+* Domain-specific rules or policies
+* Automated decision enforcement
+* Autonomous retraining loops
 * Real-time streaming inference
-* Automated retraining
-* Autonomous policy enforcement
-* Black-box decision overrides
-* Dashboard-heavy MLOps tooling
+* Notification systems
+* Opinionated dashboards
 
-These exclusions are **intentional design decisions**, not missing features.
+These exclusions are **intentional design boundaries**, not missing functionality.
 
 ---
 
 ## Technical Backbone
 
-The product builds directly on the existing Risk-Aware ML System architecture:
+The product builds directly on the existing **Risk-Aware ML System infrastructure**:
 
-* Deterministic batch ingestion and processing
-* Versioned features and labels
-* Cost-aware decision logic
-* Drift detection and monitoring
-* Feedback ingestion and linkage
-* Replayable decision analysis
+* Deterministic ingestion pipelines
+* Versioned processing stages
+* Explicit decision logic
+* Traceable document states
+* Reproducible experimentation via seeded data
+* CI/CD-backed delivery and artifact traceability
 
-Planned supporting stack for productization:
+**Technology stack (current):**
 
-* Backend: existing FastAPI services
-* Frontend: minimal React / Next.js UI
+* Backend: FastAPI
+* Frontend: Next.js (minimal UI)
 * Infrastructure:
-  * Dockerized services
-  * AWS (ECS Fargate, S3)
-  * CI via GitHub Actions
-* Storage:
-  * SQLite for demos
-  * Clear migration path for managed databases
 
-The focus is **credibility and clarity**, not premature scaling.
+  * Dockerized services
+  * GitHub Actions (CI/CD)
+* Storage:
+
+  * SQLite for local and demo environments
+  * Clear boundaries for future storage backends
+
+The focus is **engineering credibility and system clarity**, not scale.
 
 ---
 
@@ -140,11 +159,11 @@ The focus is **credibility and clarity**, not premature scaling.
 
 The product is considered successful if:
 
-* A reviewer can understand **why** a decision was made
-* Decision quality can be quantified over time using explicit costs
-* Drift and degradation are detectable before failures occur
-* Feedback is captured without contaminating training data
-* The system demonstrates production-grade engineering discipline
+* Users can ingest and explore documents without ambiguity
+* Document classification and signals are understandable and explainable
+* Risk or quality issues are surfaced explicitly
+* System behavior is deterministic and auditable
+* The platform demonstrates production-grade engineering discipline
 
 ---
 
@@ -152,27 +171,9 @@ The product is considered successful if:
 
 This project is intentionally positioned as:
 
-* an **AI system**, not a model
-* a **decision platform**, not a prediction API
+* a **document intelligence system**, not a generic OCR tool
+* a **risk-aware processing platform**, not an automation engine
 * a **governed product**, not an autonomous agent
 
-It is designed to reflect how real ML systems must operate in regulated,
-high-risk environments.
-
----
-
-## Next Steps
-
-Immediate next steps focus on **product visibility**, not ML complexity:
-
-1. Design and implement a minimal UI
-2. Expose user-facing endpoints over existing services
-3. Deploy a production-like demo environment on AWS
-4. Create a dedicated project page showcasing:
-   * architecture
-   * UI flow
-   * decision lifecycle
-   * technical trade-offs
-
-Further automation is considered only after these steps are complete
-and validated with real usage.
+It is designed to demonstrate how document-based AI systems can be built
+responsibly, transparently, and with explicit constraints.
