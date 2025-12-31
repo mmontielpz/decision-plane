@@ -113,3 +113,78 @@ Experiments in this repository are a **tool for understanding and validating sys
 They are intentionally constrained, explicit, and reproducible,
 and serve as a foundation for private, domain-specific experimentation
 outside the scope of the public repository.
+
+## Seed V1 — Demo Initialization
+
+Seed V1 is an explicit, guarded initialization mechanism designed to bring the
+system into a **demo-ready state** for development, evaluation, and review.
+
+### Purpose
+
+Seed V1 exists to:
+* populate a minimal but coherent dataset
+* expose realistic system behavior end-to-end
+* enable UI and API interaction without manual setup
+* demonstrate system contracts and data flow
+
+It is not intended to represent production data or real-world distributions.
+
+---
+
+### What Seed V1 Does
+
+When triggered, Seed V1:
+
+* creates a demo user and ingestion source
+* inserts a small set of documents with heterogeneous ingestion states
+* marks only processed/indexed documents as product-visible
+* initializes processing status records
+* attaches placeholder artifacts and signals
+* enables document listing and dashboard summaries
+
+Seed V1 is triggered explicitly via:
+* `POST /admin/seed/v1`
+* a development-only UI hook
+
+---
+
+### What Seed V1 Does NOT Do
+
+Seed V1 intentionally does NOT:
+
+* run real OCR or parsing pipelines
+* generate actual features or embeddings
+* execute model inference or scoring
+* produce decisions or risk scores
+* enable document detail navigation
+* auto-run on startup or deployment
+
+These behaviors are explicitly out of scope.
+
+---
+
+### Design Rationale
+
+The limited scope of Seed V1 is intentional.
+
+The goal is to demonstrate:
+* system structure
+* data contracts
+* operational boundaries
+* product visibility rules
+
+Rather than simulating full functionality, Seed V1 ensures that:
+* the system is honest about its current capabilities
+* unimplemented features fail visibly
+* future extensions remain cleanly scoped
+
+---
+
+### Usage Warning
+
+Seeded data should:
+* not be used for performance evaluation
+* not be interpreted as representative
+* never be deployed to production environments
+
+Seed V1 is strictly a development and demonstration tool.
