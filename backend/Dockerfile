@@ -7,13 +7,19 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
+# Install dependencies
 COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy application
 COPY app ./app
 COPY scripts ./scripts
 
-ENV DATABASE_PATH=/data/db/metadata.db
+# Create canonical data directory for SQLite
+RUN mkdir -p /app/backend/data/db
+
+# Canonical database path (matches local + tests)
+ENV DATABASE_PATH=/app/backend/data/db/metadata.db
 
 EXPOSE 8000
 
