@@ -47,7 +47,7 @@ def seed_documents(cursor, user_id, source_id):
         ("duplicate_invoice.pdf", "invoice", "uploaded"),
     ]
 
-    document_ids = []
+    rows = []
 
     for filename, doc_type, status in documents:
         doc_id = str(uuid.uuid4())
@@ -70,13 +70,43 @@ def seed_documents(cursor, user_id, source_id):
                 NOW,
             ),
         )
-        document_ids.append(doc_id)
+        rows.append((doc_id, status))
 
-    return document_ids
+    return rows
 
 
-def seed_artifacts(cursor, document_ids):
-    for doc_id in document_ids:
+def seed_processing_status(cursor, document_rows):
+    """
+    Only documents that reached a processed/indexed state
+    are considered visible by the product API.
+    """
+    for doc_id, status in document_rows:
+        if status not in ("processed", "indexed"):
+            continue
+
+        cursor.execute(
+            """
+            INSERT INTO document_processing_status (
+                document_id,
+                status,
+                processed_path,
+                feature_path,
+                updated_at
+            )
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                doc_id,
+                "processed",
+                f"processed/{doc_id}.json",
+                f"features/{doc_id}.json",
+                NOW,
+            ),
+        )
+
+
+def seed_artifacts(cursor, document_rows):
+    for doc_id, _ in document_rows:
         cursor.execute(
             """
             INSERT INTO document_artifacts (
@@ -98,8 +128,8 @@ def seed_artifacts(cursor, document_ids):
         )
 
 
-def seed_signals(cursor, document_ids):
-    for doc_id in document_ids:
+def seed_signals(cursor, document_rows):
+    for doc_id, _ in document_rows:
         cursor.execute(
             """
             INSERT INTO document_signals (
@@ -118,7 +148,7 @@ def seed_signals(cursor, document_ids):
 
 
 def run_seed_v1():
-    # schema initialization
+    # Explicit schema initialization
     init_db()
 
     conn = get_connection()
@@ -126,9 +156,11 @@ def run_seed_v1():
 
     user_id = seed_users(cursor)
     source_id = seed_sources(cursor, user_id)
-    document_ids = seed_documents(cursor, user_id, source_id)
-    seed_artifacts(cursor, document_ids)
-    seed_signals(cursor, document_ids)
+    document_rows = seed_documents(cursor, user_id, source_id)
+
+    seed_processing_status(cursor, document_rows)
+    seed_artifacts(cursor, document_rows)
+    seed_signals(cursor, document_rows)
 
     conn.commit()
     conn.close()
@@ -136,9 +168,12 @@ def run_seed_v1():
     return {
         "users": 1,
         "sources": 1,
-        "documents": len(document_ids),
-        "artifacts": len(document_ids) * 2,
-        "signals": len(document_ids),
+        "documents": len(document_rows),
+        "artifacts": len(document_rows) * 2,
+        "signals": len(document_rows),
+        "visible_documents": len(
+            [d for d, s in document_rows if s in ("processed", "indexed")]
+        ),
     }
 
 
