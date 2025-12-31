@@ -7,11 +7,11 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
-COPY backend/requirements.txt ./requirements.txt
+COPY requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend/app ./app
-COPY backend/scripts ./scripts
+COPY app ./app
+COPY scripts ./scripts
 
 ENV DATABASE_PATH=/data/db/metadata.db
 
