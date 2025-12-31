@@ -310,5 +310,94 @@ def init_db():
         """
     )
 
+        # -------------------------
+    # Product: Users (mock / logical)
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE,
+            created_at TEXT NOT NULL
+        );
+        """
+    )
+
+    # -------------------------
+    # Product: Sources
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS sources (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            source_type TEXT NOT NULL,     -- e.g. upload
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+        """
+    )
+
+    # -------------------------
+    # Product: Documents
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS documents (
+            id TEXT PRIMARY KEY,           -- UUID / deterministic id
+            user_id INTEGER NOT NULL,
+            source_id INTEGER NOT NULL,
+
+            filename TEXT NOT NULL,
+            document_type TEXT,            -- contract | invoice | policy | unknown
+            ingestion_status TEXT NOT NULL,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (source_id) REFERENCES sources(id)
+        );
+        """
+    )
+
+    # -------------------------
+    # Product: Document artifacts
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS document_artifacts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            document_id TEXT NOT NULL,
+
+            artifact_type TEXT NOT NULL,   -- raw | ocr_text | parsed
+            content_ref TEXT NOT NULL,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (document_id) REFERENCES documents(id)
+        );
+        """
+    )
+
+    # -------------------------
+    # Product: Document signals
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS document_signals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            document_id TEXT NOT NULL,
+
+            signal_type TEXT NOT NULL,     -- quality_flag | risk_flag
+            signal_value TEXT NOT NULL,    -- e.g. low_ocr_confidence
+            confidence REAL,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (document_id) REFERENCES documents(id)
+        );
+        """
+    )
+
     conn.commit()
     conn.close()
