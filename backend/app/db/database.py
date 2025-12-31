@@ -9,7 +9,7 @@ def _resolve_database_path() -> Path:
 
     Priority:
     1. DATABASE_PATH env var
-    2. Default: backend/db/metadata.db
+    2. Default: backend/data/db/metadata.db
 
     Ensures the parent directory exists.
     """
@@ -18,9 +18,9 @@ def _resolve_database_path() -> Path:
     if db_path_env:
         db_path = Path(db_path_env).expanduser().resolve()
     else:
-        # Default relative to backend/
-        project_root = Path(__file__).resolve().parents[3]
-        db_path = project_root / "backend" / "db" / "metadata.db"
+        # Canonical default relative to backend/
+        backend_root = Path(__file__).resolve().parents[2]
+        db_path = backend_root / "data" / "db" / "metadata.db"
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
     return db_path
