@@ -2,7 +2,7 @@ from datetime import datetime
 import uuid
 
 from app.db.database import get_connection
-from app.db.models import init_db
+from app.core.config import settings
 
 
 NOW = datetime.utcnow().isoformat()
@@ -54,8 +54,12 @@ def seed_documents(cursor, user_id, source_id):
         cursor.execute(
             """
             INSERT INTO documents (
-                id, user_id, source_id,
-                filename, document_type, ingestion_status,
+                id,
+                user_id,
+                source_id,
+                filename,
+                document_type,
+                ingestion_status,
                 created_at
             )
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -76,10 +80,6 @@ def seed_documents(cursor, user_id, source_id):
 
 
 def seed_processing_status(cursor, document_rows):
-    """
-    Only documents that reached a processed/indexed state
-    are considered visible by the product API.
-    """
     for doc_id, status in document_rows:
         if status not in ("processed", "indexed"):
             continue
@@ -110,7 +110,10 @@ def seed_artifacts(cursor, document_rows):
         cursor.execute(
             """
             INSERT INTO document_artifacts (
-                document_id, artifact_type, content_ref, created_at
+                document_id,
+                artifact_type,
+                content_ref,
+                created_at
             )
             VALUES (?, ?, ?, ?)
             """,
@@ -120,7 +123,10 @@ def seed_artifacts(cursor, document_rows):
         cursor.execute(
             """
             INSERT INTO document_artifacts (
-                document_id, artifact_type, content_ref, created_at
+                document_id,
+                artifact_type,
+                content_ref,
+                created_at
             )
             VALUES (?, ?, ?, ?)
             """,
@@ -133,7 +139,11 @@ def seed_signals(cursor, document_rows):
         cursor.execute(
             """
             INSERT INTO document_signals (
-                document_id, signal_type, signal_value, confidence, created_at
+                document_id,
+                signal_type,
+                signal_value,
+                confidence,
+                created_at
             )
             VALUES (?, ?, ?, ?, ?)
             """,
@@ -148,8 +158,8 @@ def seed_signals(cursor, document_rows):
 
 
 def run_seed_v1():
-    # Explicit schema initialization
-    init_db()
+    if not settings.ENABLE_SEED_V1:
+        raise RuntimeError("Seed V1 is disabled by configuration")
 
     conn = get_connection()
     cursor = conn.cursor()
