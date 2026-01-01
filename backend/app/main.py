@@ -4,12 +4,13 @@ from contextlib import asynccontextmanager
 
 from app.api.routes import router as api_router
 from app.db.models import init_db
+from app.core.config import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
-    init_db()
+    if settings.INIT_DB_ON_STARTUP:
+        init_db()
     yield
     # Shutdown (nothing for now)
 
