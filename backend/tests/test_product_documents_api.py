@@ -209,3 +209,57 @@ def test_list_documents_empty_when_no_visible():
     res = client.get("/api/documents")
     assert res.status_code == 200
     assert res.json() == []
+
+def test_get_document_detail_returns_404_if_not_visible():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    # user
+    cursor.execute(
+        "INSERT INTO users (email, created_at) VALUES (?, datetime('now'))",
+        ("hidden@example.local",),
+    )
+    user_id = cursor.lastrowid
+
+    # source
+    cursor.execute(
+        "INSERT INTO sources (user_id, source_type, created_at) VALUES (?, ?, datetime('now'))",
+        (user_id, "upload"),
+    )
+    source_id = cursor.lastrowid
+
+    # document
+    cursor.execute(
+        """
+        INSERT INTO documents (
+            id, user_id, source_id, filename,
+            document_type, ingestion_status, created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        """,
+        (
+            "doc-hidden",
+            user_id,
+            source_id,
+            "hidden.pdf",
+            "contract",
+            "uploaded",
+        ),
+    )
+
+    # processing status NOT visible
+    cursor.execute(
+        """
+        INSERT INTO document_processing_status (
+            document_id, status, updated_at
+        )
+        VALUES (?, ?, datetime('now'))
+        """,
+        ("doc-hidden", "uploaded"),
+    )
+
+    conn.commit()
+    conn.close()
+
+    res = client.get("/api/documents/doc-hidden")
+    assert res.status_code == 404
