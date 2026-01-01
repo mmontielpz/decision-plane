@@ -1,33 +1,43 @@
 # app/adapters/document_adapter.py
 
-from typing import List, Dict
 from app.db.database import get_connection
+from app.serving.document_detail_repository import get_document_detail
 
 
 class DocumentAdapter:
     """
-    Product-facing adapter for document listing.
+    Product-facing adapter for document views.
 
-    Hides internal pipeline complexity and exposes
-    a simplified, stable view for UI consumers.
+    Responsibilities:
+    - Delegate read-model assembly to serving layer
+    - Expose stable, UI-oriented shapes
+    - Contain NO business logic
     """
 
     def list_documents(self):
+        """
+        Lightweight list view for product UI.
+
+        Source of truth:
+        documents + document_processing_status
+        """
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
             """
             SELECT
-                dps.document_id,
-                dps.status,
-                pe.decision,
-                pe.score,
-                pe.created_at
-            FROM document_processing_status dps
-            LEFT JOIN prediction_events pe
-                ON pe.document_id = dps.document_id
-            ORDER BY dps.updated_at DESC
+                d.id,
+                d.filename,
+                d.document_type,
+                d.ingestion_status,
+                d.created_at,
+                ps.status AS processing_status,
+                ps.updated_at AS processed_at
+            FROM documents d
+            LEFT JOIN document_processing_status ps
+                ON d.id = ps.document_id
+            ORDER BY d.created_at DESC
             """
         )
 
@@ -36,46 +46,21 @@ class DocumentAdapter:
 
         return [
             {
-                "document_id": r[0],
-                "status": r[1],
-                "decision": r[2],
-                "score": r[3],
-                "last_updated": r[4],
+                "id": r[0],
+                "filename": r[1],
+                "document_type": r[2],
+                "ingestion_status": r[3],
+                "created_at": r[4],
+                "processing_status": r[5],
+                "processed_at": r[6],
             }
             for r in rows
         ]
 
     def get_document_by_id(self, document_id: str):
-        conn = get_connection()
-        cursor = conn.cursor()
+        """
+        Full document detail view.
 
-        cursor.execute(
-            """
-            SELECT
-                ie.document_id,
-                COALESCE(dps.status, 'unknown') AS status,
-                pe.decision,
-                pe.score,
-                pe.created_at AS last_updated,
-                dps.processed_path,
-                dps.feature_path,
-                ie.source_system
-            FROM ingestion_events ie
-            LEFT JOIN document_processing_status dps
-              ON ie.document_id = dps.document_id
-            LEFT JOIN prediction_events pe
-              ON ie.document_id = pe.document_id
-            WHERE ie.document_id = ?
-            ORDER BY pe.created_at DESC
-            LIMIT 1
-            """,
-            (document_id,),
-        )
-
-        row = cursor.fetchone()
-        conn.close()
-
-        if row is None:
-            return None
-
-        return dict(row)
+        Delegates to the canonical read-model repository.
+        """
+        return get_document_detail(document_id)
