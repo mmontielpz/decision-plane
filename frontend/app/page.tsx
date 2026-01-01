@@ -2,87 +2,79 @@
 
 export const dynamic = "force-dynamic";
 
+import { fetchDashboardSummary } from "@/services/dashboard";
 import Link from "next/link";
-import { fetchDocuments } from "@/services/documents";
-import { DocumentRow } from "@/types/document";
-import styles from "./page.module.css";
-
-// async function devDelay(ms: number) {
-//   if (process.env.NODE_ENV === "development") {
-//    await new Promise((res) => setTimeout(res, ms));
-//  }
-// }
 
 export default async function HomePage() {
-  let documents: DocumentRow[] = [];
+  let summary;
+  let error: string | null = null;
 
   try {
-
-    // await devDelay(1500);
-
-    documents = await fetchDocuments();
+    summary = await fetchDashboardSummary();
   } catch {
-    documents = [];
+    error = "Unable to load dashboard";
   }
 
-  const total = documents.length;
-  const processed = documents.filter(d => d.status === "processed").length;
-  const needsReview = documents.filter(d => d.decision === "REVIEW").length;
-
-  const latestDocument = documents
-    .slice()
-    .sort((a, b) => {
-      if (!a.last_updated || !b.last_updated) return 0;
-      return new Date(b.last_updated).getTime() - new Date(a.last_updated).getTime();
-    })[0];
-
   return (
-    <main className={styles.container}>
-      <h1 className={styles.title}>Risk-Aware ML System</h1>
+    <main style={{ padding: "2rem", maxWidth: "900px", margin: "0 auto" }}>
+      <h1>Dashboard</h1>
 
-      {/* Metrics */}
-      <section className={styles.metricsGrid}>
-        <div className={styles.card}>
-          <div className={styles.cardLabel}>Total Documents</div>
-          <div className={styles.cardValue}>{total}</div>
-        </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <div className={styles.card}>
-          <div className={styles.cardLabel}>Processed</div>
-          <div className={styles.cardValue}>{processed}</div>
-        </div>
-
-        <div className={styles.card}>
-          <div className={styles.cardLabel}>Needs Review</div>
-          <div className={styles.cardValue}>{needsReview}</div>
-        </div>
-      </section>
-
-      {/* Primary action */}
-      <section className={styles.primaryActionSection}>
-        <Link href="/documents" className={styles.primaryButton}>
-          View Documents
-        </Link>
-      </section>
-
-      {/* Latest document */}
-      <section>
-        <h2 className={styles.latestTitle}>Latest Document</h2>
-
-        {latestDocument ? (
-          <Link
-            href={`/documents/${latestDocument.document_id}`}
-            className={styles.latestCardLink}
+      {!error && summary && (
+        <>
+          <section
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "1rem",
+              marginTop: "1rem",
+            }}
           >
-            <strong>{latestDocument.document_id}</strong>
-            <div className={styles.muted}>
-              Status: {latestDocument.status}
-            </div>
-          </Link>
-        ) : (
-          <p>No documents ingested yet.</p>
-        )}
-      </section>
+            <MetricCard
+              title="Total Documents"
+              value={summary.total_visible_documents}
+            />
+            <MetricCard
+              title="Processed"
+              value={summary.processed_documents}
+            />
+            <MetricCard
+              title="Needs Review"
+              value={summary.documents_needing_review}
+            />
+            <MetricCard
+              title="Latest Activity"
+              value={summary.latest_activity_at ?? "-"}
+            />
+          </section>
+
+          <section style={{ marginTop: "2rem" }}>
+            <Link href="/documents">View documents →</Link>
+          </section>
+        </>
+      )}
     </main>
+  );
+}
+
+function MetricCard({
+  title,
+  value,
+}: {
+  title: string;
+  value: string | number;
+}) {
+  return (
+    <div
+      style={{
+        border: "1px solid #eee",
+        borderRadius: "6px",
+        padding: "1rem",
+      }}
+    >
+      <div style={{ fontSize: "0.9rem", color: "#666" }}>{title}</div>
+      <div style={{ fontSize: "1.4rem", fontWeight: 600 }}>{value}</div>
+    </div>
   );
 }
