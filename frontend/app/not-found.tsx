@@ -12,22 +12,22 @@ export default function NotFound() {
       }}
     >
       <h1 style={{ fontSize: "1.75rem", marginBottom: "1rem" }}>
-        Page not found
+        Document not available
       </h1>
 
       <p style={{ marginBottom: "1.5rem", color: "#555" }}>
-        The page you are looking for does not exist or has been moved.
+        This document does not exist or is not ready to be viewed yet.
       </p>
 
       <Link
-        href="/"
+        href="/documents"
         style={{
           textDecoration: "none",
           color: "#000",
           fontWeight: 500,
         }}
       >
-        ← Back to Home
+        ← Back to documents
       </Link>
     </main>
   );

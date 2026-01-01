@@ -1,26 +1,18 @@
 from app.db.database import get_connection
 
-# Product Read Model — do not reuse for writes or internal pipelines
+VISIBLE_PROCESSING_STATUSES = ("processed", "indexed")
 
 
 def get_document_detail(document_id: str) -> dict | None:
     """
     Read-only document detail view for Product/UI.
 
-    Returns:
-        None if document does not exist.
-
-        dict with keys:
-            id, filename, document_type, ingestion_status, created_at,
-            processing, artifacts, signals, latest_prediction
+    Visibility rule:
+        Document must have processing_status ∈ ('processed','indexed')
     """
-
     conn = get_connection()
     cursor = conn.cursor()
 
-    # -------------------------
-    # Core document + processing status
-    # -------------------------
     cursor.execute(
         """
         SELECT
@@ -35,11 +27,12 @@ def get_document_detail(document_id: str) -> dict | None:
             ps.feature_path,
             ps.updated_at AS processed_at
         FROM documents d
-        LEFT JOIN document_processing_status ps
+        JOIN document_processing_status ps
             ON d.id = ps.document_id
         WHERE d.id = ?
+          AND ps.status IN (?, ?)
         """,
-        (document_id,),
+        (document_id, *VISIBLE_PROCESSING_STATUSES),
     )
 
     row = cursor.fetchone()
@@ -64,26 +57,16 @@ def get_document_detail(document_id: str) -> dict | None:
         "latest_prediction": None,
     }
 
-    # Normalize processing state for product semantics
-    if document["processing"]["status"] is None:
-        document["processing"] = None
-
-    # -------------------------
     # Artifacts
-    # -------------------------
     cursor.execute(
         """
-        SELECT
-            artifact_type,
-            content_ref,
-            created_at
+        SELECT artifact_type, content_ref, created_at
         FROM document_artifacts
         WHERE document_id = ?
         ORDER BY created_at ASC
         """,
         (document_id,),
     )
-
     document["artifacts"] = [
         {
             "artifact_type": r[0],
@@ -93,23 +76,16 @@ def get_document_detail(document_id: str) -> dict | None:
         for r in cursor.fetchall()
     ]
 
-    # -------------------------
     # Signals
-    # -------------------------
     cursor.execute(
         """
-        SELECT
-            signal_type,
-            signal_value,
-            confidence,
-            created_at
+        SELECT signal_type, signal_value, confidence, created_at
         FROM document_signals
         WHERE document_id = ?
         ORDER BY created_at ASC
         """,
         (document_id,),
     )
-
     document["signals"] = [
         {
             "signal_type": r[0],
@@ -119,41 +95,6 @@ def get_document_detail(document_id: str) -> dict | None:
         }
         for r in cursor.fetchall()
     ]
-
-    # -------------------------
-    # Latest prediction (by run creation time)
-    # -------------------------
-    cursor.execute(
-        """
-        SELECT
-            pe.score,
-            pe.threshold,
-            pe.decision,
-            pe.created_at,
-            pr.model_name,
-            pr.model_version,
-            pr.feature_version
-        FROM prediction_events pe
-        JOIN prediction_runs pr
-            ON pe.run_id = pr.id
-        WHERE pe.document_id = ?
-        ORDER BY pr.created_at DESC, pe.created_at DESC
-        LIMIT 1
-        """,
-        (document_id,),
-    )
-
-    pred = cursor.fetchone()
-    if pred:
-        document["latest_prediction"] = {
-            "score": pred[0],
-            "threshold": pred[1],
-            "decision": pred[2],
-            "created_at": pred[3],
-            "model_name": pred[4],
-            "model_version": pred[5],
-            "feature_version": pred[6],
-        }
 
     conn.close()
     return document
