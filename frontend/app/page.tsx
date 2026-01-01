@@ -5,6 +5,27 @@ export const dynamic = "force-dynamic";
 import { fetchDashboardSummary } from "@/services/dashboard";
 import Link from "next/link";
 
+/* -------------------------
+ * Local UI helpers
+ * ------------------------- */
+function formatTimestamp(ts: string | null): string {
+  if (!ts) return "-";
+
+  const date = new Date(ts);
+  if (isNaN(date.getTime())) return ts;
+
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const hh = String(date.getHours()).padStart(2, "0");
+  const min = String(date.getMinutes()).padStart(2, "0");
+
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+}
+
+/* -------------------------
+ * Page
+ * ------------------------- */
 export default async function HomePage() {
   let summary;
   let error: string | null = null;
@@ -45,7 +66,7 @@ export default async function HomePage() {
             />
             <MetricCard
               title="Latest Activity"
-              value={summary.latest_activity_at ?? "-"}
+              value={formatTimestamp(summary.latest_activity_at)}
             />
           </section>
 
@@ -58,6 +79,9 @@ export default async function HomePage() {
   );
 }
 
+/* -------------------------
+ * Components
+ * ------------------------- */
 function MetricCard({
   title,
   value,
