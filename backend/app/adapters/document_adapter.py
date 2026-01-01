@@ -4,22 +4,26 @@ from app.db.database import get_connection
 from app.serving.document_detail_repository import get_document_detail
 
 
+VISIBLE_PROCESSING_STATUSES = ("processed", "indexed")
+
+
 class DocumentAdapter:
     """
     Product-facing adapter for document views.
 
     Responsibilities:
-    - Delegate read-model assembly to serving layer
+    - Define product visibility semantics
+    - Delegate read-model assembly to repositories
     - Expose stable, UI-oriented shapes
-    - Contain NO business logic
+    - Contain minimal SQL, no business logic
     """
 
     def list_documents(self):
         """
         Lightweight list view for product UI.
 
-        Source of truth:
-        documents + document_processing_status
+        Canonical visibility rule:
+            A document is visible iff its processing_status ∈ ('processed', 'indexed')
         """
         conn = get_connection()
         cursor = conn.cursor()
@@ -32,13 +36,14 @@ class DocumentAdapter:
                 d.document_type,
                 d.ingestion_status,
                 d.created_at,
-                ps.status AS processing_status,
-                ps.updated_at AS processed_at
+                dps.status AS processing_status
             FROM documents d
-            LEFT JOIN document_processing_status ps
-                ON d.id = ps.document_id
-            ORDER BY d.created_at DESC
-            """
+            JOIN document_processing_status dps
+                ON d.id = dps.document_id
+            WHERE dps.status IN (?, ?)
+            ORDER BY dps.updated_at DESC
+            """,
+            VISIBLE_PROCESSING_STATUSES,
         )
 
         rows = cursor.fetchall()
@@ -52,7 +57,6 @@ class DocumentAdapter:
                 "ingestion_status": r[3],
                 "created_at": r[4],
                 "processing_status": r[5],
-                "processed_at": r[6],
             }
             for r in rows
         ]
@@ -61,6 +65,7 @@ class DocumentAdapter:
         """
         Full document detail view.
 
-        Delegates to the canonical read-model repository.
+        Visibility enforcement for detail is handled at the repository level
+        or by the calling endpoint (404 if not visible).
         """
         return get_document_detail(document_id)
