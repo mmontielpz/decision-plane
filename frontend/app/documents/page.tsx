@@ -2,17 +2,17 @@
 
 export const dynamic = "force-dynamic";
 
-import { fetchDocuments } from "@/services/documents";
-import { DocumentRow } from "@/types/document";
 import Link from "next/link";
+import { fetchDocuments } from "@/services/documents";
+import { DocumentListItem } from "@/types/document";
 
 export default async function DocumentsPage() {
-  let documents: DocumentRow[] = [];
+  let documents: DocumentListItem[] = [];
   let error: string | null = null;
 
   try {
     documents = await fetchDocuments();
-  } catch (e) {
+  } catch {
     error = "Unable to load documents";
   }
 
@@ -36,27 +36,29 @@ export default async function DocumentsPage() {
         >
           <thead>
             <tr>
-              <th align="left">Document ID</th>
-              <th align="left">Status</th>
-              <th align="left">Decision</th>
-              <th align="left">Score</th>
-              <th align="left">Last Updated</th>
+              <th align="left">Filename</th>
+              <th align="left">Type</th>
+              <th align="left">Ingestion Status</th>
+              <th align="left">Processing Status</th>
+              <th align="left">Created</th>
             </tr>
           </thead>
           <tbody>
             {documents.map((doc) => (
-              <tr key={doc.document_id}>
+              <tr key={doc.id}>
                 <td>
-                  <Link href={`/documents/${doc.document_id}`}>
-                    {doc.document_id}
+                  <Link href={`/documents/${doc.id}`}>
+                    {doc.filename}
                   </Link>
                 </td>
-                <td>{doc.status}</td>
-                <td>{doc.decision ?? "-"}</td>
+                <td>{doc.document_type ?? "-"}</td>
+                <td>{doc.ingestion_status}</td>
+                <td>{doc.processing_status ?? "-"}</td>
                 <td>
-                  {typeof doc.score === "number" ? doc.score.toFixed(2) : "-"}
+                  {doc.created_at
+                    ? new Date(doc.created_at).toLocaleString()
+                    : "-"}
                 </td>
-                <td>{doc.last_updated ?? "-"}</td>
               </tr>
             ))}
           </tbody>

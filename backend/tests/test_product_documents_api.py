@@ -1,154 +1,102 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
-from app.ingestion.schemas import IngestionRequest
-from app.db.database import get_connection
-from app.core.logger import get_logger
 from pathlib import Path
-import json
-import shutil
-import sqlite3
-
-router = APIRouter()
-logger = get_logger("ingestion")
+import pytest
+from fastapi.testclient import TestClient
+from app.db.database import get_connection
 
 
-@router.post("/ingest", status_code=status.HTTP_200_OK)
-async def ingest_document(
-    metadata: str = Form(...),
-    file: UploadFile = File(...)
-):
-    # Parse and validate metadata
-    try:
-        metadata_obj = IngestionRequest.model_validate(json.loads(metadata))
-    except Exception as e:
-        logger.warning(
-            "metadata_validation_failed",
-            extra={"extra": {"error": str(e)}},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Invalid metadata payload",
-        )
+def _make_client(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> TestClient:
+    db_path = tmp_path / "db" / "metadata.db"
+    monkeypatch.setenv("DATABASE_PATH", str(db_path))
 
-    # Persist metadata (idempotent)
+    # Import AFTER env is set
+    from app.db.models import init_db
+    from app.main import app
+
+    # Explicit schema initialization for tests
+    init_db()
+
+    return TestClient(app)
+
+
+def test_get_document_detail(monkeypatch, tmp_path):
+    client = _make_client(monkeypatch, tmp_path)
+
     conn = get_connection()
     cursor = conn.cursor()
 
-    try:
-        cursor.execute(
-            """
-            INSERT INTO ingestion_events (
-                document_id,
-                ingestion_timestamp,
-                source_system,
-                status
-            )
-            VALUES (?, ?, ?, ?)
-            """,
-            (
-                metadata_obj.document_id,
-                metadata_obj.ingestion_timestamp.isoformat(),
-                metadata_obj.source_system,
-                "received",
-            ),
-        )
-        conn.commit()
-        inserted = True
-
-    except sqlite3.IntegrityError:
-        inserted = False
-        logger.info(
-            "ingestion_duplicate",
-            extra={"extra": {"document_id": metadata_obj.document_id}},
-        )
-
-    except Exception as e:
-        logger.error(
-            "ingestion_db_error",
-            extra={"extra": {"error": str(e)}},
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to persist ingestion metadata",
-        )
-
-    finally:
-        conn.close()
-
-    # Raw storage (only on first ingestion)
-    ingestion_date = metadata_obj.ingestion_timestamp.date().isoformat()
-    source = metadata_obj.source_system or "unknown"
-    raw_base = Path("data/raw")
-
-    try:
-        target_dir = raw_base / ingestion_date / source / metadata_obj.document_id
-        target_dir.mkdir(parents=True, exist_ok=True)
-
-        target_file = target_dir / file.filename
-
-        if inserted and not target_file.exists():
-            with target_file.open("wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-
-    except Exception as e:
-        logger.error(
-            "raw_storage_error",
-            extra={
-                "extra": {
-                    "path": str(target_dir),
-                    "error": str(e),
-                }
-            },
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to persist raw file",
-        )
-
-    if inserted:
-        logger.info(
-            "ingestion_completed",
-            extra={
-                "extra": {
-                    "document_id": metadata_obj.document_id,
-                    "raw_path": str(target_file),
-                }
-            },
-        )
-
-        return {
-            "document_id": metadata_obj.document_id,
-            "status": "received",
-            "raw_path": str(target_file),
-        }
-
-    # Duplicate case
-    raise HTTPException(
-        status_code=status.HTTP_409_CONFLICT,
-        detail={
-            "document_id": metadata_obj.document_id,
-            "status": "already_exists",
-        },
-    )
-
-def test_get_document_detail(client, clean_state):
-    # Seed mínimo
-    conn = get_connection()
-    cursor = conn.cursor()
-
+    # --- User ---
     cursor.execute(
         """
-        INSERT INTO ingestion_events (
-            document_id,
-            ingestion_timestamp,
-            source_system,
-            status
-        ) VALUES (?, ?, ?, ?)
+        INSERT INTO users (email, created_at)
+        VALUES (?, datetime('now'))
         """,
-        ("doc-001", "2025-01-10T12:00:00", "test", "received"),
+        ("demo@risk-aware.local",),
+    )
+    user_id = cursor.lastrowid
+
+    # --- Source ---
+    cursor.execute(
+        """
+        INSERT INTO sources (user_id, source_type, created_at)
+        VALUES (?, ?, datetime('now'))
+        """,
+        (user_id, "upload"),
+    )
+    source_id = cursor.lastrowid
+
+    # --- Document ---
+    cursor.execute(
+        """
+        INSERT INTO documents (
+            id,
+            user_id,
+            source_id,
+            filename,
+            document_type,
+            ingestion_status,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        """,
+        (
+            "doc-001",
+            user_id,
+            source_id,
+            "example.pdf",
+            "contract",
+            "processed",
+        ),
+    )
+
+    # --- Processing status ---
+    cursor.execute(
+        """
+        INSERT INTO document_processing_status (
+            document_id,
+            status,
+            processed_path,
+            feature_path,
+            updated_at
+        )
+        VALUES (?, ?, ?, ?, datetime('now'))
+        """,
+        (
+            "doc-001",
+            "processed",
+            "processed/doc-001.json",
+            "features/doc-001.json",
+        ),
     )
 
     conn.commit()
     conn.close()
 
+    # --- Call API ---
     res = client.get("/api/documents/doc-001")
+
     assert res.status_code == 200
+
+    body = res.json()
+    assert body["id"] == "doc-001"
+    assert body["filename"] == "example.pdf"
+    assert body["processing"]["status"] == "processed"
