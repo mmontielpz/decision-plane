@@ -3,7 +3,7 @@
 from fastapi import APIRouter, HTTPException
 from app.adapters.document_adapter import DocumentAdapter
 
-router = APIRouter(prefix="/api/documents", tags=["product-documents"])
+router = APIRouter(prefix="/documents", tags=["product-documents"])
 
 
 @router.get("")

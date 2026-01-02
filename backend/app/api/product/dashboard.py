@@ -1,7 +1,10 @@
 from fastapi import APIRouter
 from app.serving.dashboard_repository import get_dashboard_summary
 
-router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
+router = APIRouter(
+    prefix="/dashboard",
+    tags=["dashboard"],
+)
 
 
 @router.get("/summary")
