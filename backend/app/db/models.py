@@ -348,7 +348,7 @@ def init_db():
             source_id INTEGER NOT NULL,
 
             filename TEXT NOT NULL,
-            document_type TEXT,            -- contract | invoice | policy | unknown
+            document_type TEXT,            -- document category (application-defined)
             ingestion_status TEXT NOT NULL,
 
             created_at TEXT NOT NULL,

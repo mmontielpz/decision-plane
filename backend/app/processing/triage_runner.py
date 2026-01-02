@@ -5,6 +5,8 @@ from app.core.models.document import Document, ProcessingState
 from app.core.triage.engine import evaluate
 from app.serving.repository import PredictionRepository
 
+REVIEW_QUEUE_CONFIDENCE_THRESHOLD = 0.80
+
 
 def _load_document(document_id: str) -> Document:
     """
@@ -52,4 +54,4 @@ def triage_document(document_id: str):
     prediction_repo = PredictionRepository()
     prediction = prediction_repo.get_latest_prediction(document_id)
 
-    return evaluate(document, prediction, confidence_threshold=0.80)
+    return evaluate(document, prediction, confidence_threshold=REVIEW_QUEUE_CONFIDENCE_THRESHOLD)

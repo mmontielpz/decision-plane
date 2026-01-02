@@ -39,12 +39,12 @@ def seed_documents(cursor, user_id, source_id):
     documents = [
         ("contract_alpha.pdf", "contract", "uploaded"),
         ("contract_beta.pdf", "contract", "processed"),
-        ("invoice_2023_01.pdf", "invoice", "processed"),
-        ("invoice_2023_02.pdf", "invoice", "indexed"),
+        ("document_sample_02.pdf", "unknown", "processed"),
+        ("document_sample_02.pdf", "unknown", "indexed"),
         ("policy_internal.md", "policy", "processed"),
         ("policy_external.md", "policy", "indexed"),
         ("scan_low_quality.png", "unknown", "failed"),
-        ("duplicate_invoice.pdf", "invoice", "uploaded"),
+        ("duplicate_document.pdf", "unknown", "uploaded"),
     ]
 
     rows = []
