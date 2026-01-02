@@ -24,7 +24,7 @@ def test_ingest_success(client):
     payload = ingest_payload("doc_001")
 
     response = client.post(
-        "/ingest",
+        "/api/ingest",
         data=payload["data"],
         files=payload["files"],
     )
@@ -40,13 +40,13 @@ def test_ingest_duplicate(client):
     payload = ingest_payload("doc_001")
 
     client.post(
-        "/ingest",
+        "/api/ingest",
         data=payload["data"],
         files=payload["files"],
     )
 
     response = client.post(
-        "/ingest",
+        "/api/ingest",
         data=payload["data"],
         files=payload["files"],
     )
@@ -57,7 +57,7 @@ def test_ingest_duplicate(client):
 # HTTP 422
 def test_ingest_invalid_metadata(client):
     response = client.post(
-        "/ingest",
+        "/api/ingest",
         data={"metadata": "not-a-json"},
         files={"file": ("dummy.txt", b"test")},
     )
@@ -78,7 +78,7 @@ def test_ingest_raw_storage_failure(client, monkeypatch):
     payload = ingest_payload("doc_002")
 
     response = client.post(
-        "/ingest",
+        "/api/ingest",
         data=payload["data"],
         files=payload["files"],
     )
