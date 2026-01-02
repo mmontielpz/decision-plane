@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, status
 from app.admin.seed_v1 import run_seed_v1
 
 router = APIRouter(
-    prefix="/api/admin",
+    prefix="/admin",
     tags=["admin"],
 )
 
