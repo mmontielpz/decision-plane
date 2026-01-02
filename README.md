@@ -1,42 +1,47 @@
-# Risk-Aware Document Processing System
+# Decision Plane
+
+*A Framework for Auditable, Human-in-the-Loop ML Decision Systems*
 
 ## Overview
 
-This repository implements a **risk-aware document processing system** built on top of a **fully governed machine learning infrastructure**.
+This repository implements **Decision Plane**, a framework for building **auditable, governed machine learning decision systems**.
 
-The focus of this project is not a single model, but the **design, implementation, and operation of a production-grade ML system** that supports document-centric workflows under uncertainty and asymmetric risk.
+The focus of Decision Plane is not a single model or task, but the **design, implementation, and operation of a production-grade decision infrastructure** that supports document-centric workflows under uncertainty and asymmetric risk.
 
-The system covers the full lifecycle required to move from raw, unstructured documents to **auditable, explainable, and reproducible system signals**, exposed through a minimal user-facing product.
+The system covers the full lifecycle required to move from raw, unstructured inputs to **explainable, reproducible, and traceable decision signals**, exposed through a minimal, non-autonomous product layer.
 
 ---
 
 ## Problem Statement
 
-Organizations process large volumes of operational documents where failures rarely originate from obvious errors.
+Organizations increasingly rely on ML systems to support operational decisions.
+In practice, failures rarely originate from obvious model errors.
 
 Instead, risk accumulates through:
 
 * incomplete or ambiguous information
-* low-quality or noisy inputs (e.g. scans, OCR artifacts)
-* inconsistent structure across documents
+* noisy or low-quality inputs
+* inconsistent structure across records
 * delayed or partial feedback
 * gradual degradation of system behavior
 
-Many ML approaches frame this as a static classification problem.
+Many ML solutions frame this as a static classification problem.
 
-In practice, the challenge is **risk-aware document processing**, where:
+In real systems, the challenge is **decision making under uncertainty**, where:
 
 * errors have asymmetric cost
 * labels are noisy, incomplete, or unavailable
-* data distributions evolve
-* system reliability and traceability matter
+* data distributions evolve over time
+* auditability and replay matter
 * automation must be constrained
+
+Decision Plane addresses this gap by treating **decision infrastructure** as a first-class engineering problem.
 
 ---
 
 ## Project Motivation
 
-This project exists to demonstrate how **real ML systems are engineered**, not how models are trained in isolation.
+Decision Plane exists to demonstrate how **real ML decision systems are engineered**, not how models are trained in isolation.
 
 It intentionally avoids:
 
@@ -51,53 +56,53 @@ Instead, it emphasizes:
 * deterministic processing
 * auditability and replay
 * controlled CI/CD
-* incremental productization
+* incremental, disciplined product exposure
 
 ---
 
 ## System Scope
 
-The system is implemented as an **integrated ML platform**, covering:
+Decision Plane is implemented as an **integrated decision infrastructure**, covering:
 
-1. **Document Ingestion**
-   Deterministic, idempotent ingestion of unstructured documents.
+1. **Input Ingestion**
+   Deterministic, idempotent ingestion of unstructured inputs.
 
 2. **Raw and Processed Storage**
    Clear separation of raw inputs, processed artifacts, and metadata.
 
 3. **Processing and Feature Materialization**
-   Reproducible pipelines for OCR output, parsing, and feature extraction.
+   Reproducible pipelines for text extraction outputs, parsing, and feature extraction.
 
-4. **Classification and Signals**
-   Generic document classification and explicit quality or risk indicators.
+4. **Decisions and Signals**
+   Generic classification outputs and explicit quality or risk indicators.
 
 5. **Serving**
-   Batch-first, auditable serving of document-level outputs.
+   Batch-first, auditable serving of decision outputs.
 
-6. **Monitoring and Feedback Control**
-   Drift detection, error analysis, and replayable decision analysis.
+6. **Monitoring and Analysis**
+   Drift detection, error analysis, and replayable decision evaluation.
 
 7. **Containerization**
    Reproducible runtime environments using Docker.
 
 8. **CI/CD**
-   Automated testing, build validation, and controlled delivery of artifacts.
+   Automated testing, build validation, and controlled artifact delivery.
 
-The ML system acts as **infrastructure**, not the product itself.
+Decision Plane acts as **infrastructure**, not an autonomous decision maker.
 
 ---
 
 ## Product Layer
 
-On top of the ML system, this repository exposes a **minimal document intelligence product (V1)** that allows users to:
+On top of the Decision Plane infrastructure, this repository exposes a **minimal decision inspection layer (V1)** that allows users to:
 
-* upload and ingest documents
-* explore document collections
-* inspect extracted content and metadata
-* understand classification and system signals
-* identify quality or risk issues explicitly
+* ingest and explore inputs
+* inspect processed artifacts and metadata
+* review decision outputs and signals
+* understand uncertainty and risk explicitly
+* prioritize human review where needed
 
-The product is intentionally **non-autonomous** and preserves human oversight.
+The product layer is intentionally **non-autonomous** and preserves human oversight by design.
 
 ---
 
@@ -117,7 +122,7 @@ Known limitations and trade-offs are documented explicitly.
 
 ## Non-Goals
 
-This project is not intended to be:
+Decision Plane is not intended to be:
 
 * a Kaggle-style experiment
 * a generic OCR tool
@@ -130,9 +135,9 @@ This project is not intended to be:
 ## Status
 
 **Phases 0–5 completed**
-The underlying ML system is fully implemented as a governed, auditable decision infrastructure, including ingestion, processing, modeling, serving, and monitoring.
+The Decision Plane infrastructure is fully implemented as a governed, auditable decision system, including ingestion, processing, modeling, serving, and monitoring.
 
-**Phase 6 in progress**
-The system is being exposed as a **Risk-Aware Document Processing product (V1)**, focused on usability, traceability, and explicit risk signaling.
+**Phase 6 — Product exposure (exploratory)**
+The system can be exposed as a **Decision Plane inspection layer (V1)**, focused on usability, traceability, and explicit uncertainty signaling.
 
-The project is **functionally complete at the system level** and actively transitioning into a product-grade document intelligence platform.
+The project is **functionally complete at the infrastructure level** and positioned for controlled exploration of decision-centric use cases.

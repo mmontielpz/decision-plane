@@ -1,38 +1,31 @@
-Correcto. Dejamos el roadmap **cerrado, autocontenido y sin promesas futuras**.
-Solo lo que **existe** y lo que **está en ejecución inmediata**.
+# Roadmap — Decision Plane
 
-Aquí está el **Roadmap corregido**, con **Phase 7 y 8 removidas** y sin forward-looking statements.
-
----
-
-# Roadmap — Risk-Aware Document Processing System
-
-(System Phases)
+*(System Phases)*
 
 ## Purpose
 
-This roadmap documents the **technical and product evolution of the Risk-Aware Document Processing System**, from ML decision foundations to a **usable, risk-aware document intelligence platform**.
+This roadmap documents the **technical and product evolution of Decision Plane**, from foundational decision logic to a **usable decision inspection layer**.
 
 Each phase represents a **closed system milestone**, not a timeline commitment.
 
-The ML system is treated as **infrastructure**, not the product itself.
+Decision Plane is treated as **decision infrastructure**, not an autonomous product.
 
 ---
 
 ## Phase 0 — Problem and Decision Definition ✅
 
 **Objective**
-Define decision boundaries, risk surfaces, and audit constraints.
+Define decision boundaries, uncertainty surfaces, and audit constraints.
 
 **Status**
 Completed
 
 ---
 
-## Phase 1 — Data Ingestion and Raw Storage ✅
+## Phase 1 — Input Ingestion and Raw Storage ✅
 
 **Objective**
-Deterministic, idempotent ingestion and raw document storage.
+Deterministic, idempotent ingestion and raw input storage.
 
 **Status**
 Completed
@@ -42,70 +35,82 @@ Completed
 ## Phase 2 — Processing and Feature Materialization ✅
 
 **Objective**
-Reproducible pipelines for document parsing, OCR output, and feature extraction.
+Reproducible pipelines for text extraction outputs, parsing, and feature materialization.
 
 **Status**
 Completed
 
 ---
 
-## Phase 3 — Labeling, Modeling, and Evaluation ✅
+## Phase 3 — Signals, Modeling, and Evaluation ✅
 
 **Objective**
-Risk-aware learning signals, cost-aware evaluation, and model diagnostics.
+Explicit decision signals, cost-aware evaluation, and diagnostic visibility.
 
 **Status**
 Completed
 
 ---
 
-## Phase 4 — Serving and Prediction Infrastructure ✅
+## Phase 4 — Serving and Decision Infrastructure ✅
 
 **Objective**
-Batch-first, auditable serving of document classifications and signals.
+Batch-first, auditable serving of decision outputs and signals.
 
 **Status**
 Completed
 
 ---
 
-## Phase 5 — Decision Quality, Monitoring, and Feedback Control ✅
+## Phase 5 — Decision Quality, Monitoring, and Replay ✅
 
 **Objective**
-Govern document-related decisions through drift detection, error analysis, and replayable outcomes.
+Govern decision behavior through drift detection, error analysis, and replayable outcomes.
 
 **Status**
 Completed
 
 ---
 
-## Phase 6 — Productization: Document Intelligence Core (V1) 🔄
+## Phase 6 — Product Exposure: Decision Inspection Layer (V1) 🔄
 
 **Objective**
-Expose the governed ML system as a **usable document processing product**, focused on clarity, traceability, and risk signaling.
+Expose Decision Plane as a **usable inspection layer** focused on clarity, traceability, and explicit uncertainty signaling.
 
 **Scope (V1)**
 
-* User-facing document upload and ingestion
-* OCR (mocked but pluggable)
-* Generic document classification
+* User-facing input upload and ingestion
+* Text extraction outputs (pluggable, not enforced)
+* Generic classification and signal generation
 * Indexing and search
-* Explicit risk flags
+* Explicit uncertainty or quality flags
 * Seeded experimental datasets
-* Minimal UI for document exploration
-* Deterministic system behavior
+* Minimal UI for input exploration
+* Deterministic, replayable system behavior
 
 **Status**
-In progress
+In execution (no scope expansion)
 
 ---
 
 ## System Status
 
-The system is:
+Decision Plane is:
 
-* **ML-complete** as governed decision infrastructure
+* **Decision-complete** as governed infrastructure
 * **CI/CD-complete** and reproducible
-* Actively transitioning into a **product-grade document intelligence system**
+* Actively exposed through a **minimal inspection layer**
 
-Future effort is constrained to **product usability and validation**, not additional ML scope.
+All future effort is constrained to **usability, validation, and presentation**, not additional decision logic or autonomous behavior.
+
+---
+
+### Notes on Scope Discipline
+
+* No autonomous decision execution
+* No retraining loops
+* No policy enforcement
+* No real-time streaming
+* No domain specialization
+
+These are **explicit design constraints**, not deferred features.

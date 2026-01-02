@@ -1,98 +1,88 @@
-Correcto trabajar este documento ahora. El **contenido actual es bueno**, pero está **desalineado** con la decisión que ya tomaste:
-
-* El producto **ya no es “Risk-Aware ML System” genérico**
-* Tampoco debe comprometer **Legal / Compliance** como dominio público
-* Debe reflejar **Option C**: core genérico, reutilizable, demostrable
-
-Voy a **reescribir el Product Vision**, manteniendo tu rigor, **eliminando dominio sensible**, y cerrándolo como **visión de producto V1**, no como roadmap futuro.
-
----
-
-# Product Vision — Risk-Aware Document Processing System
+# Product Vision — Decision Plane
 
 ## Overview
 
-The **Risk-Aware Document Processing System** is a **governed document intelligence platform** designed to help users **ingest, understand, and manage critical documents under uncertainty and asymmetric risk**.
+**Decision Plane** is a **governed decision infrastructure** designed to help users **ingest, inspect, and manage document-centric signals under uncertainty and asymmetric risk**.
 
 The system prioritizes:
 
 * decision clarity over raw automation
-* explicit risk signaling over opaque predictions
+* explicit uncertainty and risk signaling over opaque predictions
 * auditability and traceability over autonomous behavior
 
-This repository represents the **public, domain-agnostic core** of the product.
-Its purpose is to demonstrate **how document intelligence systems should be engineered**, not to encode domain-specific business logic.
+This repository represents the **public, domain-agnostic core** of Decision Plane.
+Its purpose is to demonstrate **how decision-oriented ML systems should be engineered**, not to encode domain-specific business logic.
 
 ---
 
 ## Product Goal
 
-Expose a fully governed ML system as a **usable document processing product** that allows users to:
+Expose a fully governed decision system as a **usable inspection layer** that allows users to:
 
-* ingest and explore documents reliably
-* understand how documents are classified
-* identify potential quality or risk issues
-* interact with system outputs with confidence
+* ingest and explore inputs reliably
+* understand how decisions and signals are produced
+* identify potential quality or risk issues explicitly
+* interact with system outputs with confidence and traceability
 
-The product is intentionally designed to **avoid autonomous decisions, policy execution, or self-modifying behavior**.
+The product layer is intentionally designed to **avoid autonomous decisions, policy execution, or self-modifying behavior**.
 Human interpretation and oversight are always preserved.
 
 ---
 
 ## Target Use Case (Generic)
 
-### Risk-Aware Document Management
+### Decision-Centric Document Workflows
 
 **Context**
 
-Organizations handle large volumes of documents where:
+Organizations handle large volumes of operational records where:
 
 * structure varies
 * data quality is inconsistent
 * errors carry asymmetric costs
 * full automation is unsafe or undesirable
 
-Examples of document characteristics (non-domain-specific):
+Examples of input characteristics (non-domain-specific):
 
-* incomplete or malformed documents
-* low-quality scans or OCR noise
-* ambiguous document types
+* incomplete or malformed records
+* noisy or low-quality text extraction outputs
+* ambiguous categories or labels
 * missing or inconsistent metadata
 
-The system assists users by **organizing, classifying, and flagging documents**, not by making final decisions on their behalf.
+Decision Plane assists users by **organizing, classifying, and flagging inputs**, not by making final decisions on their behalf.
 
 ---
 
 ## Target Users
 
-* Analysts reviewing document collections
-* Operators managing document workflows
-* Engineers or data teams validating document pipelines
+* Analysts reviewing decision outputs and signals
+* Operators managing document-centric workflows
+* Engineers or data teams validating processing pipelines
 * Stakeholders requiring traceability and auditability
 
-The product is designed for **internal, accountable users**, not end consumers.
+The system is designed for **internal, accountable users**, not end consumers.
 
 ---
 
 ## Core User Journey (V1)
 
-1. User uploads documents into the system
-2. System ingests and processes documents deterministically
-3. Documents are:
+1. User uploads inputs into the system
+2. System ingests and processes inputs deterministically
+3. Inputs are:
 
    * parsed
-   * classified (generic types)
-   * indexed for search
-4. System assigns:
+   * classified (generic categories)
+   * indexed for exploration
+4. The system assigns:
 
-   * document type
-   * confidence indicators
-   * explicit risk or quality flags
-5. User explores documents through:
+   * category labels
+   * confidence or quality indicators
+   * explicit risk or uncertainty flags
+5. User explores inputs through:
 
    * search
    * filters
-   * document detail views
+   * detail views
 6. User inspects extracted content and system signals
 
 At no point does the system take autonomous actions or modify its behavior implicitly.
@@ -103,12 +93,12 @@ At no point does the system take autonomous actions or modify its behavior impli
 
 ### Included
 
-* Web-based user interface
-* Document upload and ingestion
-* OCR and text extraction (mocked but pluggable)
-* Generic document classification
+* Web-based inspection interface
+* Input upload and ingestion
+* Text extraction outputs (pluggable, not enforced)
+* Generic classification and signal generation
 * Indexing and search
-* Explicit quality and risk flags
+* Explicit quality and uncertainty flags
 * Deterministic, replayable processing
 * Seeded experimental datasets for demos and testing
 
@@ -120,8 +110,8 @@ At no point does the system take autonomous actions or modify its behavior impli
 * Automated decision enforcement
 * Autonomous retraining loops
 * Real-time streaming inference
-* Notification systems
-* Opinionated dashboards
+* Notification or alerting systems
+* Opinionated dashboards or prescriptive UI flows
 
 These exclusions are **intentional design boundaries**, not missing functionality.
 
@@ -129,12 +119,12 @@ These exclusions are **intentional design boundaries**, not missing functionalit
 
 ## Technical Backbone
 
-The product builds directly on the existing **Risk-Aware ML System infrastructure**:
+The product layer builds directly on the **Decision Plane infrastructure**, which provides:
 
 * Deterministic ingestion pipelines
 * Versioned processing stages
-* Explicit decision logic
-* Traceable document states
+* Explicit decision and signal logic
+* Traceable input and state transitions
 * Reproducible experimentation via seeded data
 * CI/CD-backed delivery and artifact traceability
 
@@ -149,31 +139,30 @@ The product builds directly on the existing **Risk-Aware ML System infrastructur
 * Storage:
 
   * SQLite for local and demo environments
-  * Clear boundaries for future storage backends
+  * Clear abstraction boundaries for alternative backends
 
-The focus is **engineering credibility and system clarity**, not scale.
+The focus is **engineering credibility and system clarity**, not scale or feature breadth.
 
 ---
 
 ## Product Success Criteria
 
-The product is considered successful if:
+The product layer is considered successful if:
 
-* Users can ingest and explore documents without ambiguity
-* Document classification and signals are understandable and explainable
-* Risk or quality issues are surfaced explicitly
+* Users can ingest and explore inputs without ambiguity
+* Classification outputs and signals are understandable and explainable
+* Uncertainty or quality issues are surfaced explicitly
 * System behavior is deterministic and auditable
-* The platform demonstrates production-grade engineering discipline
+* The platform demonstrates disciplined, production-grade engineering
 
 ---
 
 ## Positioning
 
-This project is intentionally positioned as:
+Decision Plane is intentionally positioned as:
 
-* a **document intelligence system**, not a generic OCR tool
-* a **risk-aware processing platform**, not an automation engine
-* a **governed product**, not an autonomous agent
+* a **decision inspection system**, not an autonomous agent
+* a **governed signal platform**, not an automation engine
+* a **framework-backed product layer**, not a domain solution
 
-It is designed to demonstrate how document-based AI systems can be built
-responsibly, transparently, and with explicit constraints.
+It is designed to demonstrate how document-centric ML decision systems can be built **responsibly, transparently, and with explicit constraints**.

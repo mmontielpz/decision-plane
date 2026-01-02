@@ -1,24 +1,22 @@
-# Security and IP Boundaries
+# Security and Intellectual Property Boundaries — Decision Plane
 
 ## Purpose
 
-This document defines the **security assumptions, intellectual property boundaries,
-and intended usage constraints** of the Risk-Aware Document Processing System.
+This document defines the **security assumptions**, **intellectual property boundaries**, and **intended usage constraints** of **Decision Plane**.
 
-It is not a legal contract.
-Its purpose is to **set clear technical and product expectations** for contributors,
-users, and organizations evaluating this repository.
+It is **not a legal contract**.
+Its purpose is to establish **clear technical and product expectations** for contributors, evaluators, and organizations reviewing or extending this repository.
 
 ---
 
 ## Public Scope
 
-This repository provides:
+The public Decision Plane repository provides:
 
-* A domain-agnostic document processing core
-* A governed ML system architecture
+* A domain-agnostic decision infrastructure core
+* A governed document processing architecture
 * Deterministic ingestion, processing, and serving pipelines
-* Reference implementations suitable for demos and experimentation
+* Reference implementations suitable for development, evaluation, and demonstration
 
 The public codebase is intended for **educational, evaluative, and foundational use**.
 
@@ -30,28 +28,25 @@ This repository intentionally does **not** include:
 
 * Proprietary or real-world datasets
 * Trained models derived from sensitive or regulated data
-* Domain-specific business rules or policies
-* Production secrets, credentials, or tokens
-* Customer-specific configurations
+* Domain-specific business rules, policies, or enforcement logic
+* Production secrets, credentials, or access tokens
+* Customer-specific configurations or integrations
 * Legal, regulatory, or operational decision logic
 
-Any appearance of such data in forks or deployments is the responsibility
-of the party operating that system.
+Any inclusion of such elements in forks or deployments is the **sole responsibility of the operator**.
 
 ---
 
 ## Intellectual Property Boundaries
 
-The intellectual property exposed in this repository is limited to:
+The intellectual property intentionally exposed in this repository is limited to:
 
-* System architecture
-* Engineering patterns
-* Infrastructure and delivery practices
+* System architecture and design patterns
+* Engineering and delivery practices
+* Infrastructure layout and contracts
 * Reference implementations
 
-The primary sources of commercial value — including data, trained models,
-domain rules, and operational workflows — are **explicitly out of scope** and
-are expected to live in **private forks or downstream systems**.
+The primary sources of commercial value — including data, trained models, domain logic, and operational workflows — are **explicitly excluded** and are expected to reside in **private extensions or downstream systems**.
 
 ---
 
@@ -59,49 +54,50 @@ are expected to live in **private forks or downstream systems**.
 
 The expected extension model is:
 
-* Public core repository remains domain-agnostic
+* The public core remains domain-agnostic and non-enforcing
 * Domain-specific behavior is introduced via:
+
   * configuration
   * feature flags
-  * private forks
+  * private forks or internal repositories
 
-This design allows organizations to reuse the core system while preserving
-confidentiality and regulatory boundaries.
+This approach enables reuse of the core system while preserving confidentiality, regulatory isolation, and intellectual property boundaries.
 
 ---
 
 ## Security Assumptions
 
-The system assumes:
+Decision Plane assumes:
 
 * Trusted internal users
-* No hostile multi-tenant environment
-* No exposure to untrusted public traffic
-* No handling of secrets in the public repository
+* Controlled execution environments
+* No hostile multi-tenant exposure
+* No direct handling of secrets in the public repository
 
-As such, the system is **not hardened** for hostile threat models by default.
+Accordingly, the system is **not hardened** against advanced or adversarial threat models by default.
 
-Any production deployment must implement appropriate security controls
-outside the scope of this repository.
+Any production deployment must implement appropriate security controls, authentication, authorization, and monitoring **outside the scope of this repository**.
 
 ---
 
 ## No Warranty or Liability
 
-This repository is provided **as-is**, without guarantees of fitness,
-security, or compliance.
+This repository is provided **as-is**, without warranties or guarantees of:
 
-It is the responsibility of downstream users to assess suitability,
-security posture, and regulatory compliance for their specific use cases.
+* fitness for a particular purpose
+* security posture
+* regulatory compliance
+
+Downstream users are responsible for evaluating suitability, security requirements, and compliance obligations for their specific environments and use cases.
 
 ---
 
 ## Summary
 
-This repository is intended to:
+Decision Plane is intended to:
 
-* Demonstrate how risk-aware document processing systems are engineered
-* Provide a solid, reusable technical foundation
-* Avoid embedding sensitive logic or data in public code
+* Demonstrate how governed decision systems can be engineered
+* Provide a reusable, auditable technical foundation
+* Avoid embedding sensitive data, logic, or policies in public code
 
-It is **not** intended to function as a turnkey production system.
+It is **not** intended to function as a turnkey production system or a hosted service.

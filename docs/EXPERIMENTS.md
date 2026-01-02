@@ -1,18 +1,18 @@
-# Experiments and Seeded Scenarios
+# Experiments and Seeded Scenarios — Decision Plane
 
 ## Purpose
 
-This document defines the **experimental scope** of the Risk-Aware Document Processing System.
+This document defines the **experimental scope** of **Decision Plane**.
 
 Experiments in this repository are **not benchmarks** and **not performance claims**.
 They exist to:
 
 * validate system behavior
-* exercise end-to-end pipelines
-* support demos and development
+* exercise end-to-end system contracts
+* support development and demonstration
 * expose failure modes explicitly
 
-The goal is **system understanding**, not model optimization.
+The objective is **system understanding and verification**, not model optimization.
 
 ---
 
@@ -20,15 +20,15 @@ The goal is **system understanding**, not model optimization.
 
 All experiments in this repository use **seeded, synthetic, or mock data**.
 
-These experiments are designed to simulate:
+They are designed to simulate:
 
-* realistic document structures
-* OCR noise and extraction errors
+* realistic artifact structures
+* extraction noise and parsing errors
 * incomplete or ambiguous metadata
 * classification uncertainty
 * processing failures and retries
 
-They do **not** represent real customer data or production workloads.
+These experiments **do not represent real data** and **do not reflect production workloads**.
 
 ---
 
@@ -36,20 +36,20 @@ They do **not** represent real customer data or production workloads.
 
 Seeded data is intentionally constructed to:
 
-* cover common document patterns
-* include edge cases and errors
-* trigger quality and risk signals
-* exercise indexing and search flows
+* cover common structural patterns
+* include edge cases and failure conditions
+* trigger quality or uncertainty signals
+* exercise indexing and retrieval paths
 
 Seeded datasets may include:
 
-* dummy contracts
-* fake invoices
-* simulated policies
-* malformed or low-quality scans
-* duplicated or inconsistent documents
+* dummy documents
+* synthetic samples
+* simulated policies or contracts
+* malformed or low-quality inputs
+* duplicated or inconsistent artifacts
 
-The objective is to validate **robustness and clarity**, not accuracy.
+The goal is to validate **robustness, determinism, and clarity**, not accuracy.
 
 ---
 
@@ -58,12 +58,12 @@ The objective is to validate **robustness and clarity**, not accuracy.
 Experiments are used to validate that:
 
 * ingestion is deterministic and idempotent
-* processing stages produce explicit artifacts
-* document states transition correctly
+* processing stages emit explicit artifacts
+* artifact states transition correctly
 * classification outputs are explainable
-* risk or quality flags are surfaced clearly
-* indexing and retrieval behave as expected
-* system behavior is replayable
+* uncertainty or quality signals surface explicitly
+* indexing and retrieval behave consistently
+* system behavior is replayable end-to-end
 
 ---
 
@@ -73,23 +73,23 @@ Experiments in this repository do **not** validate:
 
 * real-world model performance
 * domain-specific accuracy
-* regulatory compliance
+* regulatory or compliance requirements
 * production-scale throughput
 * security hardening
 
-Any conclusions beyond system behavior are out of scope.
+Any interpretation beyond **system behavior** is out of scope.
 
 ---
 
 ## Running Experiments
 
-Experiments are typically triggered via:
+Experiments are executed through **explicit, controlled mechanisms**, such as:
 
-* controlled seed scripts
-* explicit administrative endpoints
+* seed scripts
+* administrative endpoints
 * local development workflows
 
-They are **never executed implicitly on startup**.
+They are **never executed implicitly** during startup or deployment.
 
 ---
 
@@ -97,34 +97,39 @@ They are **never executed implicitly on startup**.
 
 When reviewing experiment outputs:
 
-* focus on system behavior, not scores
+* focus on system behavior, not numeric scores
 * inspect artifacts and logs
-* observe failure handling
-* validate determinism and traceability
+* observe error handling and recovery paths
+* verify determinism and traceability
 
-Do not interpret experimental outputs as claims of business value or domain expertise.
+Experimental outputs must not be interpreted as claims of business value or domain expertise.
 
 ---
 
 ## Summary
 
-Experiments in this repository are a **tool for understanding and validating system behavior**.
+Experiments in this repository are a **tool for validating and understanding Decision Plane**.
 
-They are intentionally constrained, explicit, and reproducible,
-and serve as a foundation for private, domain-specific experimentation
+They are intentionally constrained, explicit, and reproducible.
+They provide a foundation for **private, domain-specific experimentation**
 outside the scope of the public repository.
+
+---
 
 ## Seed V1 — Demo Initialization
 
-Seed V1 is an explicit, guarded initialization mechanism designed to bring the
-system into a **demo-ready state** for development, evaluation, and review.
+Seed V1 is an **explicit, guarded initialization mechanism** designed to bring
+Decision Plane into a **demo-ready state** for development, evaluation, and review.
+
+---
 
 ### Purpose
 
 Seed V1 exists to:
-* populate a minimal but coherent dataset
-* expose realistic system behavior end-to-end
-* enable UI and API interaction without manual setup
+
+* populate a minimal, coherent dataset
+* expose end-to-end system behavior
+* enable API and UI interaction without manual setup
 * demonstrate system contracts and data flow
 
 It is not intended to represent production data or real-world distributions.
@@ -136,13 +141,14 @@ It is not intended to represent production data or real-world distributions.
 When triggered, Seed V1:
 
 * creates a demo user and ingestion source
-* inserts a small set of documents with heterogeneous ingestion states
-* marks only processed/indexed documents as product-visible
+* inserts a small set of artifacts with heterogeneous states
+* marks only processed or indexed artifacts as product-visible
 * initializes processing status records
 * attaches placeholder artifacts and signals
 * enables document listing and dashboard summaries
 
 Seed V1 is triggered explicitly via:
+
 * `POST /admin/seed/v1`
 * a development-only UI hook
 
@@ -150,13 +156,12 @@ Seed V1 is triggered explicitly via:
 
 ### What Seed V1 Does NOT Do
 
-Seed V1 intentionally does NOT:
+Seed V1 intentionally does **not**:
 
-* run real OCR or parsing pipelines
+* execute real extraction or parsing pipelines
 * generate actual features or embeddings
-* execute model inference or scoring
-* produce decisions or risk scores
-* enable document detail navigation
+* run model inference or scoring
+* produce decisions or enforcement outcomes
 * auto-run on startup or deployment
 
 These behaviors are explicitly out of scope.
@@ -165,26 +170,29 @@ These behaviors are explicitly out of scope.
 
 ### Design Rationale
 
-The limited scope of Seed V1 is intentional.
+The constrained scope of Seed V1 is intentional.
 
-The goal is to demonstrate:
+Its purpose is to demonstrate:
+
 * system structure
 * data contracts
 * operational boundaries
 * product visibility rules
 
 Rather than simulating full functionality, Seed V1 ensures that:
-* the system is honest about its current capabilities
-* unimplemented features fail visibly
+
+* system capabilities are explicit
+* unimplemented paths fail visibly
 * future extensions remain cleanly scoped
 
 ---
 
 ### Usage Warning
 
-Seeded data should:
+Seeded data must:
+
 * not be used for performance evaluation
 * not be interpreted as representative
 * never be deployed to production environments
 
-Seed V1 is strictly a development and demonstration tool.
+Seed V1 is strictly a **development and demonstration tool**.
