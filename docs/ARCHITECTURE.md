@@ -1,18 +1,19 @@
-# Architecture — Risk-Aware Document Processing System
+# Architecture — Decision Plane
 
 ## Purpose
 
-This document defines the **final, authoritative architecture** of the Risk-Aware
-Document Processing System.
+This document defines the **final, authoritative architecture** of **Decision Plane**.
 
-It replaces phase-based design notes and intermediate architecture documents.
-The goal is to describe **what the system is**, not how it evolved.
+It supersedes all phase-based notes and intermediate design documents.
+Its purpose is to describe **what the system is**, not how it evolved.
+
+Decision Plane is a **decision infrastructure framework**, not a domain product and not an automation engine.
 
 ---
 
 ## Architectural Principles
 
-The system is designed around the following non-negotiable principles:
+Decision Plane is built around the following non-negotiable principles:
 
 * Determinism over implicit behavior
 * Auditability over automation
@@ -20,143 +21,188 @@ The system is designed around the following non-negotiable principles:
 * Clear separation of concerns
 * Product-facing clarity over internal complexity
 
+These principles apply across **all layers** of the system.
+
 ---
 
 ## High-Level System Flow
 
 ```
-Document Input
+Input Artifact
 ↓
-Ingestion Service
+Ingestion Boundary
 ↓
 Raw Storage (immutable)
 ↓
 Processing Pipeline
 
-* OCR
-* Parsing
-* Feature extraction
-  ↓
-  Processed Storage
-  ↓
-  Classification & Signals
-  ↓
-  Indexing
-  ↓
-  Serving API
-  ↓
-  User Interface
-
+  - Text extraction (pluggable)
+  - Parsing
+  - Feature materialization
+↓
+Processed Artifacts
+↓
+Decision Signals
+↓
+Indexing
+↓
+Serving API
+↓
+Inspection Interface
 ```
 
-Each stage produces **explicit artifacts** and **persistent state**.
+Each stage produces **explicit artifacts** and **persisted state**.
+No stage mutates prior outputs.
 
 ---
 
 ## Core Components
 
-### Ingestion Layer
-Responsible for:
-* receiving documents
-* validating inputs
-* assigning document and job identifiers
-* persisting raw artifacts
+### Ingestion Boundary
 
-This layer is idempotent and side-effect controlled.
+Responsibilities:
+
+* Receive input artifacts
+* Validate structural metadata
+* Assign stable identifiers
+* Persist raw, immutable artifacts
+
+Characteristics:
+
+* Idempotent
+* Side-effect controlled
+* Fully auditable
 
 ---
 
 ### Processing Layer
-Responsible for:
-* OCR (mocked or pluggable)
-* text extraction
-* structured parsing
-* feature materialization
 
-Processing is batch-oriented and replayable.
+Responsibilities:
+
+* Text extraction (mocked or pluggable)
+* Structured parsing
+* Feature materialization
+
+Characteristics:
+
+* Batch-oriented
+* Deterministic
+* Replayable from raw inputs
 
 ---
 
-### Classification & Signal Layer
-Responsible for:
-* assigning generic document types
-* producing confidence indicators
-* emitting explicit quality or risk flags
+### Decision Signal Layer
 
-This layer **does not enforce decisions**.
+Responsibilities:
+
+* Assign generic classifications
+* Produce confidence indicators
+* Emit explicit quality or uncertainty signals
+
+Characteristics:
+
+* Read-only with respect to upstream artifacts
+* No policy enforcement
+* No autonomous action
+
+This layer **produces signals, not decisions**.
 
 ---
 
 ### Indexing Layer
-Responsible for:
-* text indexing
-* metadata indexing
-* searchability and retrieval
 
-Indexing is decoupled from classification.
+Responsibilities:
+
+* Index text content
+* Index metadata and signals
+* Enable retrieval and filtering
+
+Characteristics:
+
+* Decoupled from signal generation
+* Non-authoritative (derived view)
 
 ---
 
 ### Serving Layer (API)
 
-The system exposes **read-only and write-controlled APIs** for:
+The system exposes **controlled APIs** for:
 
-* document ingestion
-* document listing
-* document detail retrieval
-* search and filtering
+* Input ingestion
+* Artifact listing
+* Artifact detail inspection
+* Search and filtering
 
-APIs are designed as **product interfaces**, not internal plumbing.
+APIs are designed as **product-facing contracts**, not internal plumbing.
 
 ---
 
-### User Interface
+### Inspection Interface (UI)
 
-The UI is a minimal, product-facing layer that allows users to:
+The interface allows users to:
 
-* upload documents
-* explore document collections
-* inspect extracted content and system signals
+* Upload and ingest artifacts
+* Explore collections
+* Inspect extracted content and decision signals
 
-The UI does not embed business rules.
+Characteristics:
+
+* Read-only with respect to decision logic
+* No embedded business rules
+* No autonomous behavior
 
 ---
 
 ## Configuration and Extensibility
 
-Domain-specific behavior is introduced via:
+Domain-specific behavior is introduced through:
 
-* configuration
-* feature flags
-* controlled forks
+* Configuration
+* Feature flags
+* Controlled forks
 
-The public repository intentionally excludes:
-* domain rules
-* trained models
-* proprietary datasets
+The public Decision Plane repository **intentionally excludes**:
+
+* Domain rules
+* Trained production models
+* Proprietary datasets
+* Enforcement logic
 
 ---
 
 ## Explicit Non-Goals
 
-The architecture explicitly excludes:
+Decision Plane explicitly excludes:
 
-* autonomous policy execution
-* self-modifying behavior
-* automated retraining
-* real-time inference guarantees
+* Autonomous policy execution
+* Self-modifying behavior
+* Automated retraining
+* Real-time inference guarantees
 
-These exclusions are intentional.
+These exclusions are **design constraints**, not deferred work.
 
 ---
 
 ## Architectural Stability
 
-This architecture is considered **stable** for the V1 product.
+This architecture is considered **stable** for the current inspection layer (V1).
 
-Future changes are expected to occur through:
-* configuration
-* extension
-* private forks
+Future evolution is expected through:
+
+* Configuration
+* Extension
+* Private specialization
 
 Not through breaking architectural shifts.
+
+---
+
+### Architectural Positioning
+
+Decision Plane is:
+
+* A **decision infrastructure framework**
+* A **signal-first system**
+* An **inspection and governance layer**
+
+It is **not** an automation engine, an agent system, or a policy executor.

@@ -6,6 +6,8 @@ from datetime import datetime
 from app.db.database import get_connection
 from app.serving.batch_runner import BatchPredictionRunner
 
+DEFAULT_CONFIDENCE_THRESHOLD = 0.6
+
 
 def load_feature_rows(feature_version: str) -> List[Dict[str, Any]]:
     """
@@ -62,8 +64,8 @@ def run_batch_serving():
         model_name="baseline_logreg",
         model_version="v1",
         feature_version="v1",
-        predictor_fn=lambda row: 0.75,  # placeholder controlado
-        threshold=0.6,
+        predictor_fn=lambda row: 0.75,
+        threshold=DEFAULT_CONFIDENCE_THRESHOLD,
     )
 
     run_id = runner.run(

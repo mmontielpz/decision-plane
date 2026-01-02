@@ -1,6 +1,6 @@
 # app/monitoring/decision_quality.py
 
-from typing import Iterable, Dict, Tuple
+from typing import Iterable, Dict
 
 
 def compute_confusion_counts(

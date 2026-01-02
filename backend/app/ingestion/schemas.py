@@ -1,10 +1,17 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from typing import Optional, Dict, Any
 from datetime import datetime
-from typing import Optional
 
 
 class IngestionRequest(BaseModel):
-    document_id: str = Field(..., description="Unique document identifier")
+    """
+    Request schema for document ingestion.
+
+    This schema mirrors the existing ingestion pipeline contract.
+    Validation is intentionally permissive; semantic checks occur downstream.
+    """
+
+    document_id: str
     ingestion_timestamp: datetime
-    document_type: Optional[str] = None
     source_system: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None

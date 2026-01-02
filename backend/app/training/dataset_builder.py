@@ -1,7 +1,6 @@
 from pathlib import Path
-import sqlite3
 import json
-from typing import Iterable, Dict, Any
+from typing import Dict
 from app.db.database import get_connection
 
 

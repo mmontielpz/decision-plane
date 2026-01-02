@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Iterable, Optional
 
 from app.db.database import get_connection
+from app.core.models.document import Prediction
 
 
 class PredictionRepository:
@@ -196,3 +197,41 @@ class PredictionRepository:
             }
             for r in rows
         ]
+
+    def get_latest_prediction(self, document_id: str) -> Prediction | None:
+        """
+        Returns the most recent prediction event for a document, mapped to the core Prediction model.
+        No triage logic. No thresholds. Pure read+mapping.
+        """
+        conn = get_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+                pe.decision,
+                pe.score,
+                pr.model_version
+            FROM prediction_events pe
+            JOIN prediction_runs pr
+                ON pr.id = pe.run_id
+            WHERE pe.document_id = ?
+            ORDER BY pe.created_at DESC, pe.id DESC
+            LIMIT 1
+            """,
+            (document_id,),
+        )
+
+        row = cursor.fetchone()
+        conn.close()
+
+        if not row:
+            return None
+
+        decision, score, model_version = row
+
+        return Prediction(
+            label=decision,
+            confidence=score,
+            model_version=model_version,
+        )

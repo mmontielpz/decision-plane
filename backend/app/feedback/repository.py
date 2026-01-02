@@ -1,7 +1,7 @@
 # app/feedback/repository.py
 
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional
 
 from app.db.database import get_connection
 
