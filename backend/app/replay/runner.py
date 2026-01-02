@@ -1,6 +1,6 @@
 # app/replay/runner.py
 
-from typing import Iterable, Dict, List
+from typing import Dict, List
 from app.db.database import get_connection
 
 
