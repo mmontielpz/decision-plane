@@ -1,4 +1,5 @@
 from app.db.database import get_connection
+from app.serving.review_queue_repository import get_review_queue
 
 VISIBLE_PROCESSING_STATUSES = ("processed", "indexed")
 
@@ -22,7 +23,7 @@ def get_dashboard_summary() -> dict:
     processed = total_visible
 
     # Needs review (v1 placeholder)
-    needs_review = 0
+    needs_review = len(get_review_queue())
 
     # Latest activity
     cursor.execute(

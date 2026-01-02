@@ -81,6 +81,48 @@ def test_dashboard_summary_counts_visible_documents():
                     f"features/{doc_id}.json",
                 ),
             )
+    # --- Prediction run (neutralize triage) ---
+    cursor.execute(
+        """
+        INSERT INTO prediction_runs (
+            run_key,
+            created_at,
+            model_name,
+            model_version,
+            feature_version,
+            dataset_key,
+            status
+        )
+        VALUES (
+            'run-dashboard',
+            datetime('now'),
+            'doc-classifier',
+            'v1',
+            'v1',
+            'test',
+            'completed'
+        )
+        """
+    )
+    run_id = cursor.lastrowid
+
+    # --- High-confidence predictions (should NOT require review) ---
+    for doc_id, status in documents:
+        if status in ("processed", "indexed"):
+            cursor.execute(
+                """
+                INSERT INTO prediction_events (
+                    created_at,
+                    run_id,
+                    document_id,
+                    score,
+                    threshold,
+                    decision
+                )
+                VALUES (datetime('now'), ?, ?, ?, 0.80, 'accept')
+                """,
+                (run_id, doc_id, 0.95),
+            )
 
     conn.commit()
     conn.close()
