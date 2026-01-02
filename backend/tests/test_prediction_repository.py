@@ -4,6 +4,8 @@ import pytest
 from app.db.database import get_connection
 from app.serving.repository import PredictionRepository
 
+print(PredictionRepository.__module__)
+
 
 def test_prediction_run_is_idempotent(clean_state):
     repo = PredictionRepository()
