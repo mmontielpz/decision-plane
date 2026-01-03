@@ -1,6 +1,18 @@
-def test_end_to_end_inspection_flow_v1(client):
+import os
+
+os.environ["ENABLE_SEED_V1"] = "true"
+
+from fastapi.testclient import TestClient
+from app.main import app
+
+
+client = TestClient(app)
+
+
+def test_end_to_end_inspection_flow_v1():
     # 1) Seed system
-    client.post("/api/admin/seed/v1")
+    res = client.post("/api/admin/seed/v1")
+    assert res.status_code == 200
 
     # 2) Dashboard
     dashboard = client.get("/api/dashboard/summary").json()
