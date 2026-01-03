@@ -232,8 +232,8 @@ def seed_predictions(cursor, document_rows):
 # -------------------------
 # Entry point
 # -------------------------
-def run_seed_v1():
-    if not settings.ENABLE_SEED_V1:
+def run_seed_v1(*, force: bool = False):
+    if not settings.ENABLE_SEED_V1 and not force:
         raise RuntimeError("Seed V1 is disabled by configuration")
 
     conn = get_connection()
