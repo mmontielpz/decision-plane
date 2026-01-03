@@ -1,5 +1,8 @@
 from fastapi import APIRouter
+from typing import List
+
 from app.adapters.review_queue_adapter import ReviewQueueAdapter
+from app.api.contracts.review_queue_v1 import ReviewQueueItemV1
 
 router = APIRouter(
     prefix="/review-queue",
@@ -7,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.get("")
+@router.get("", response_model=List[ReviewQueueItemV1])
 def list_review_queue():
     """
     Read-only endpoint exposing the review queue.

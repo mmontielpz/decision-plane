@@ -11,15 +11,13 @@ router = APIRouter(
 
 @router.post("/seed/v1")
 def seed_v1():
-    enabled = os.getenv("ENABLE_SEED_V1", "false").lower() == "true"
-
-    if not enabled:
+    try:
+        summary = run_seed_v1()
+    except RuntimeError:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Seed V1 is disabled",
         )
-
-    summary = run_seed_v1()
 
     return {
         "status": "ok",

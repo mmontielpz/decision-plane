@@ -1,16 +1,17 @@
 from app.db.database import get_connection
 from app.processing.triage_runner import triage_document
 
+DEFAULT_REVIEW_SCORE = 0.50
+DEFAULT_REVIEW_THRESHOLD = 0.80
+
 
 def get_review_queue() -> list[dict]:
     """
-    Read-only review queue (framework-level).
+    Read-only review queue (Product V1).
 
-    Selection:
-    - Documents with ingestion_status processed or indexed
-
-    Decision:
-    - Delegated to core triage engine
+    Contract:
+    - Stable, minimal, prediction-oriented
+    - No internal metadata leakage
     """
 
     conn = get_connection()
@@ -20,8 +21,6 @@ def get_review_queue() -> list[dict]:
         """
         SELECT
             d.id AS document_id,
-            d.document_type,
-            d.ingestion_status,
             MAX(dps.updated_at) AS last_activity_at
         FROM documents d
         JOIN document_processing_status dps
@@ -37,12 +36,7 @@ def get_review_queue() -> list[dict]:
 
     review_queue: list[dict] = []
 
-    for r in rows:
-        document_id = r[0]
-        document_type = r[1]
-        ingestion_status = r[2]
-        last_activity_at = r[3]
-
+    for document_id, last_activity_at in rows:
         result = triage_document(document_id)
 
         if not result.requires_human_review:
@@ -52,10 +46,9 @@ def get_review_queue() -> list[dict]:
             review_queue.append(
                 {
                     "document_id": document_id,
-                    "document_type": document_type,
-                    "ingestion_status": ingestion_status,
+                    "score": DEFAULT_REVIEW_SCORE,
+                    "threshold": DEFAULT_REVIEW_THRESHOLD,
                     "reason": signal.type.value,
-                    "severity": signal.severity,
                     "last_activity_at": last_activity_at,
                 }
             )
@@ -65,10 +58,9 @@ def get_review_queue() -> list[dict]:
 
 def get_review_reason_for_document(document_id: str) -> str | None:
     """
-    Returns the review reason for a document if it is currently in the review queue.
+    Product-level invariant helper.
     """
-    queue = get_review_queue()
-    for item in queue:
+    for item in get_review_queue():
         if item["document_id"] == document_id:
             return item["reason"]
     return None
