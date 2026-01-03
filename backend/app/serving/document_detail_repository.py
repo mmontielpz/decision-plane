@@ -1,4 +1,6 @@
 from app.db.database import get_connection
+from app.serving.review_queue_repository import get_review_reason_for_document
+from app.serving.repository import PredictionRepository
 
 VISIBLE_PROCESSING_STATUSES = ("processed", "indexed")
 
@@ -57,7 +59,9 @@ def get_document_detail(document_id: str) -> dict | None:
         "latest_prediction": None,
     }
 
+    # -------------------------
     # Artifacts
+    # -------------------------
     cursor.execute(
         """
         SELECT artifact_type, content_ref, created_at
@@ -76,7 +80,9 @@ def get_document_detail(document_id: str) -> dict | None:
         for r in cursor.fetchall()
     ]
 
+    # -------------------------
     # Signals
+    # -------------------------
     cursor.execute(
         """
         SELECT signal_type, signal_value, confidence, created_at
@@ -97,4 +103,23 @@ def get_document_detail(document_id: str) -> dict | None:
     ]
 
     conn.close()
+
+    # -------------------------
+    # Latest prediction (READ MODEL COMPOSITION)
+    # -------------------------
+    prediction_repo = PredictionRepository()
+    latest_prediction = prediction_repo.get_latest_prediction(document_id)
+
+    if latest_prediction:
+        document["latest_prediction"] = {
+            "label": latest_prediction.label,
+            "confidence": latest_prediction.confidence,
+            "model_version": latest_prediction.model_version,
+        }
+
+    # -------------------------
+    # Review reason (CONSISTENCY WITH REVIEW QUEUE)
+    # -------------------------
+    document["review_reason"] = get_review_reason_for_document(document_id)
+
     return document
