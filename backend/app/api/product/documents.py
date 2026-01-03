@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 from app.adapters.document_adapter import DocumentAdapter
+from app.api.contracts.document_detail_v1 import DocumentDetailV1
 
 router = APIRouter(prefix="/documents", tags=["product-documents"])
 
@@ -12,7 +13,7 @@ def list_documents():
     return adapter.list_documents()
 
 
-@router.get("/{document_id}")
+@router.get("/{document_id}", response_model=DocumentDetailV1)
 def get_document_detail(document_id: str):
     adapter = DocumentAdapter()
     doc = adapter.get_document_by_id(document_id)
