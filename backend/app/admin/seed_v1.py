@@ -8,6 +8,9 @@ from app.core.config import settings
 NOW = datetime.utcnow().isoformat()
 
 
+# -------------------------
+# Users & Sources
+# -------------------------
 def seed_users(cursor):
     cursor.execute(
         """
@@ -35,6 +38,9 @@ def seed_sources(cursor, user_id):
     return cursor.lastrowid
 
 
+# -------------------------
+# Documents
+# -------------------------
 def seed_documents(cursor, user_id, source_id):
     documents = [
         ("contract_alpha.pdf", "contract", "uploaded"),
@@ -79,6 +85,9 @@ def seed_documents(cursor, user_id, source_id):
     return rows
 
 
+# -------------------------
+# Processing Status
+# -------------------------
 def seed_processing_status(cursor, document_rows):
     for doc_id, status in document_rows:
         if status not in ("processed", "indexed"):
@@ -105,6 +114,9 @@ def seed_processing_status(cursor, document_rows):
         )
 
 
+# -------------------------
+# Artifacts
+# -------------------------
 def seed_artifacts(cursor, document_rows):
     for doc_id, _ in document_rows:
         cursor.execute(
@@ -134,6 +146,9 @@ def seed_artifacts(cursor, document_rows):
         )
 
 
+# -------------------------
+# Signals
+# -------------------------
 def seed_signals(cursor, document_rows):
     for doc_id, _ in document_rows:
         cursor.execute(
@@ -157,6 +172,66 @@ def seed_signals(cursor, document_rows):
         )
 
 
+def seed_predictions(cursor, document_rows):
+    # Create a single prediction run
+    cursor.execute(
+        """
+        INSERT INTO prediction_runs (
+            run_key,
+            created_at,
+            model_name,
+            model_version,
+            feature_version,
+            dataset_key,
+            status
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            "seed-v1-run",
+            NOW,
+            "seed_classifier",
+            "v1",
+            "v1",
+            "seed",
+            "completed",
+        ),
+    )
+    run_id = cursor.lastrowid
+
+    for doc_id, status in document_rows:
+        if status not in ("processed", "indexed"):
+            continue
+
+        # Deterministic but varied scores
+        score = 0.45 if status == "processed" else 0.92
+        decision = "REVIEW" if score < 0.80 else "ACCEPT"
+
+        cursor.execute(
+            """
+            INSERT INTO prediction_events (
+                created_at,
+                run_id,
+                document_id,
+                score,
+                threshold,
+                decision
+            )
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (
+                NOW,
+                run_id,
+                doc_id,
+                score,
+                0.80,
+                decision,
+            ),
+        )
+
+# -------------------------
+# Entry point
+# -------------------------
 def run_seed_v1():
     if not settings.ENABLE_SEED_V1:
         raise RuntimeError("Seed V1 is disabled by configuration")
@@ -171,6 +246,7 @@ def run_seed_v1():
     seed_processing_status(cursor, document_rows)
     seed_artifacts(cursor, document_rows)
     seed_signals(cursor, document_rows)
+    seed_predictions(cursor, document_rows)
 
     conn.commit()
     conn.close()
@@ -184,6 +260,8 @@ def run_seed_v1():
         "visible_documents": len(
             [d for d, s in document_rows if s in ("processed", "indexed")]
         ),
+        "prediction_runs": 1,
+        "prediction_events": 1,
     }
 
 

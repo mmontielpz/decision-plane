@@ -61,3 +61,14 @@ def get_review_queue() -> list[dict]:
             )
 
     return review_queue
+
+
+def get_review_reason_for_document(document_id: str) -> str | None:
+    """
+    Returns the review reason for a document if it is currently in the review queue.
+    """
+    queue = get_review_queue()
+    for item in queue:
+        if item["document_id"] == document_id:
+            return item["reason"]
+    return None
