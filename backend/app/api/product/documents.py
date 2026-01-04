@@ -52,3 +52,16 @@ def get_document_explanation_v1(document_id: str):
         status_code=404,
         detail="Explanation not available for this document",
     )
+
+@router.get("/{document_id}/timeline")
+def get_document_timeline(document_id: str):
+    """
+    Timeline read-model (v1).
+
+    Intentionally unimplemented.
+    Contract guarantees explicit 404.
+    """
+    raise HTTPException(
+        status_code=404,
+        detail="Timeline not available for this document",
+    )
