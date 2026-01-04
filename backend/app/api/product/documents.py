@@ -37,3 +37,18 @@ def get_document_replay(document_id: str):
         status_code=404,
         detail="Replay not available for this document",
     )
+
+@router.get("/{document_id}/explanation")
+def get_document_explanation_v1(document_id: str):
+    """
+    Decision Explanation V1.
+
+    Intentionally unimplemented.
+    Contract guarantees:
+    - Endpoint exists
+    - Explicit 404 with stable message
+    """
+    raise HTTPException(
+        status_code=404,
+        detail="Explanation not available for this document",
+    )
