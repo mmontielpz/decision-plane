@@ -77,6 +77,44 @@ def init_db():
     )
 
     # -------------------------
+    # Phase 2b: Processing steps (lineage)
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS processing_steps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            document_id TEXT NOT NULL,
+            run_id TEXT NOT NULL,
+
+            step_name TEXT NOT NULL,          -- ingest | process | feature | triage | replay
+            status TEXT NOT NULL,             -- started | completed | failed
+
+            metadata_json TEXT,               -- free-form JSON for metrics, paths, versions
+            error_message TEXT,
+
+            created_at TEXT NOT NULL,
+
+            FOREIGN KEY (run_id) REFERENCES processing_runs(run_id)
+        );
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_processing_steps_document
+        ON processing_steps (document_id);
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_processing_steps_run
+        ON processing_steps (run_id);
+        """
+    )
+
+    # -------------------------
     # Phase 3: Label signals
     # -------------------------
     cursor.execute(
