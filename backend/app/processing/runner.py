@@ -8,6 +8,45 @@ from app.processing.schemas import ProcessedRecord, FeatureRecord
 PROCESSOR_VERSION = "0.2.0"
 FEATURE_VERSION = "v1"
 
+def _emit_processing_step(
+    *,
+    run_id: str,
+    document_id: str,
+    step_name: str,
+    status: str,
+    metadata: dict | None = None,
+    error_message: str | None = None,
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO processing_steps (
+            run_id,
+            document_id,
+            step_name,
+            status,
+            metadata_json,
+            error_message,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            run_id,
+            document_id,
+            step_name,
+            status,
+            json.dumps(metadata) if metadata else None,
+            error_message,
+            datetime.utcnow().isoformat(),
+        ),
+    )
+
+    conn.commit()
+    conn.close()
+
 
 def _create_processing_run() -> str:
     run_id = str(uuid.uuid4())
@@ -162,6 +201,14 @@ def run_batch(limit: int = 1):
                 raw_file = raw_files[0]
                 text = _read_raw_text(raw_file)
 
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="read_raw_text",
+                    status="success",
+                    metadata={"path": str(raw_file)},
+                )
+
                 processed_record = ProcessedRecord(
                     document_id=document_id,
                     ingestion_timestamp=datetime.fromisoformat(ingestion_ts),
@@ -171,6 +218,14 @@ def run_batch(limit: int = 1):
                     extraction_method="plain_text",
                     normalized_text=text,
                     raw_path=str(raw_file),
+                )
+
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="write_processed_record",
+                    status="success",
+                    metadata={"processed_path": str(processed_path)},
                 )
 
                 processed_dir = (

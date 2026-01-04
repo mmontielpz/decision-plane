@@ -1,6 +1,7 @@
 from app.db.database import get_connection
 from app.serving.review_queue_repository import get_review_reason_for_document
 from app.serving.repository import PredictionRepository
+from app.serving.processing_lineage_repository import list_processing_steps_for_document
 
 VISIBLE_PROCESSING_STATUSES = ("processed", "indexed")
 
@@ -121,5 +122,8 @@ def get_document_detail(document_id: str) -> dict | None:
     # Review reason (CONSISTENCY WITH REVIEW QUEUE)
     # -------------------------
     document["review_reason"] = get_review_reason_for_document(document_id)
+
+    # Processing lineage (READ MODEL)
+    document["processing_lineage"] = list_processing_steps_for_document(document_id)
 
     return document

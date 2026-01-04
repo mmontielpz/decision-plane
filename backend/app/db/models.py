@@ -53,6 +53,30 @@ def init_db():
     )
 
     # -------------------------
+    # Phase 2: Processing lineage (step-level)
+    # -------------------------
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS processing_steps (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            document_id TEXT NOT NULL,
+            step_name TEXT NOT NULL,       -- e.g. extract_text, parse, materialize_features
+            status TEXT NOT NULL,          -- running|completed|failed
+            metadata_json TEXT,
+            error_message TEXT,
+            created_at TEXT NOT NULL
+        );
+        """
+    )
+
+    cursor.execute(
+        """
+        CREATE INDEX IF NOT EXISTS idx_processing_steps_document_id
+        ON processing_steps (document_id);
+        """
+    )
+
+    # -------------------------
     # Phase 3: Label signals
     # -------------------------
     cursor.execute(
