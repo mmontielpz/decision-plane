@@ -44,3 +44,55 @@ def list_decision_outcomes() -> List[Dict]:
         }
         for r in rows
     ]
+
+
+def compute_decision_outcomes_single_window(
+    *, threshold: float
+) -> Dict:
+    """
+    Deterministic aggregation over all prediction_events.
+
+    Produces a single decision window.
+    Read-only computation.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            MIN(created_at),
+            MAX(created_at)
+        FROM prediction_events
+        """
+    )
+    window = cursor.fetchone()
+
+    if not window or window[0] is None:
+        conn.close()
+        return {}
+
+    window_start, window_end = window
+
+    cursor.execute(
+        """
+        SELECT
+            COUNT(*) AS n_total,
+            SUM(CASE WHEN score < ? THEN 1 ELSE 0 END) AS n_accept,
+            SUM(CASE WHEN score >= ? THEN 1 ELSE 0 END) AS n_review
+        FROM prediction_events
+        """,
+        (threshold, threshold),
+    )
+
+    counts = cursor.fetchone()
+    conn.close()
+
+    return {
+        "window_start": window_start,
+        "window_end": window_end,
+        "threshold": threshold,
+        "n_total": counts[0],
+        "n_accept": counts[1],
+        "n_review": counts[2],
+    }
