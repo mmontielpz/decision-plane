@@ -2,26 +2,42 @@
 
 ## Purpose
 
-This document defines the **final, authoritative architecture** of **Decision Plane**.
+This document defines the **authoritative architecture** of **Decision Plane**.
 
-It supersedes all phase-based notes and intermediate design documents.
+It supersedes all phase-based notes, exploratory diagrams, and intermediate design discussions.
 Its purpose is to describe **what the system is**, not how it evolved.
 
-Decision Plane is a **decision infrastructure framework**, not a domain product and not an automation engine.
+Decision Plane is a **decision infrastructure framework**.
+It is **not** a domain product, not an automation engine, and not an agent system.
+
+---
+
+## Architectural Positioning
+
+Decision Plane exists to support **inspection, governance, and reasoning over decisions** produced from document-centric machine learning pipelines.
+
+It is intentionally positioned as:
+
+* signal-first
+* inspection-oriented
+* deterministic
+* replayable
+
+It does **not** execute policies, enforce actions, or automate outcomes.
 
 ---
 
 ## Architectural Principles
 
-Decision Plane is built around the following non-negotiable principles:
+The system is built around the following **non-negotiable principles**:
 
 * Determinism over implicit behavior
 * Auditability over automation
 * Explicit state transitions
-* Clear separation of concerns
-* Product-facing clarity over internal complexity
+* Separation of concerns across layers
+* Product-facing clarity over internal convenience
 
-These principles apply across **all layers** of the system.
+All components and features must conform to these principles.
 
 ---
 
@@ -35,117 +51,145 @@ Ingestion Boundary
 Raw Storage (immutable)
 ↓
 Processing Pipeline
-
-  - Text extraction (pluggable)
-  - Parsing
-  - Feature materialization
+    - Extraction (pluggable or mocked)
+    - Parsing
+    - Feature materialization
 ↓
 Processed Artifacts
 ↓
 Decision Signals
 ↓
-Indexing
+Review / Indexing
 ↓
 Serving API
 ↓
 Inspection Interface
 ```
 
-Each stage produces **explicit artifacts** and **persisted state**.
-No stage mutates prior outputs.
+Key properties:
+
+* Each stage produces **explicit artifacts**
+* Each stage persists **explicit state**
+* No stage mutates upstream outputs
+* All transitions are auditable
 
 ---
 
-## Core Components
+## Core Architectural Layers
 
-### Ingestion Boundary
+### 1. Ingestion Boundary
 
-Responsibilities:
+**Responsibilities**
 
 * Receive input artifacts
 * Validate structural metadata
-* Assign stable identifiers
-* Persist raw, immutable artifacts
+* Assign stable, deterministic identifiers
+* Persist raw artifacts immutably
 
-Characteristics:
+**Characteristics**
 
 * Idempotent
 * Side-effect controlled
 * Fully auditable
 
+The ingestion boundary defines the **start of determinism**.
+
 ---
 
-### Processing Layer
+### 2. Processing Layer
 
-Responsibilities:
+**Responsibilities**
 
 * Text extraction (mocked or pluggable)
 * Structured parsing
 * Feature materialization
 
-Characteristics:
+**Characteristics**
 
 * Batch-oriented
 * Deterministic
 * Replayable from raw inputs
 
+All processing steps emit **explicit step-level lineage**.
+
 ---
 
-### Decision Signal Layer
+### 3. Processing Lineage Layer
 
-Responsibilities:
+**Responsibilities**
 
-* Assign generic classifications
-* Produce confidence indicators
-* Emit explicit quality or uncertainty signals
+* Record step-level execution events
+* Persist run identifiers
+* Capture success, failure, and metadata
 
-Characteristics:
+**Characteristics**
+
+* Write-only during execution
+* Read-only for inspection
+* Fully ordered and timestamped
+
+This layer exists to answer **“what happened and why”**, not to optimize execution.
+
+---
+
+### 4. Decision Signal Layer
+
+**Responsibilities**
+
+* Produce generic classifications
+* Emit confidence and uncertainty signals
+* Flag documents requiring human review
+
+**Characteristics**
 
 * Read-only with respect to upstream artifacts
 * No policy enforcement
-* No autonomous action
+* No autonomous actions
 
 This layer **produces signals, not decisions**.
 
 ---
 
-### Indexing Layer
+### 5. Review and Indexing Layer
 
-Responsibilities:
+**Responsibilities**
 
-* Index text content
-* Index metadata and signals
-* Enable retrieval and filtering
+* Materialize review queues
+* Aggregate system state for dashboards
+* Enable filtering and retrieval
 
-Characteristics:
+**Characteristics**
 
-* Decoupled from signal generation
-* Non-authoritative (derived view)
-
----
-
-### Serving Layer (API)
-
-The system exposes **controlled APIs** for:
-
-* Input ingestion
-* Artifact listing
-* Artifact detail inspection
-* Search and filtering
-
-APIs are designed as **product-facing contracts**, not internal plumbing.
+* Derived views
+* Non-authoritative
+* Replaceable without affecting core state
 
 ---
 
-### Inspection Interface (UI)
+### 6. Serving Layer (API)
 
-The interface allows users to:
+The system exposes **strict, versioned APIs** for:
 
-* Upload and ingest artifacts
-* Explore collections
-* Inspect extracted content and decision signals
+* Document listing
+* Document detail inspection
+* Review queue access
+* Dashboard summaries
 
-Characteristics:
+APIs are treated as **product contracts**, not internal plumbing.
+
+Breaking changes require explicit version bumps.
+
+---
+
+### 7. Inspection Interface (UI)
+
+The inspection interface enables:
+
+* Exploration of documents
+* Inspection of artifacts and signals
+* Understanding of processing lineage
+
+**Characteristics**
 
 * Read-only with respect to decision logic
 * No embedded business rules
@@ -155,18 +199,18 @@ Characteristics:
 
 ## Configuration and Extensibility
 
-Domain-specific behavior is introduced through:
+Domain-specific behavior is introduced only through:
 
 * Configuration
 * Feature flags
 * Controlled forks
 
-The public Decision Plane repository **intentionally excludes**:
+The public repository **intentionally excludes**:
 
 * Domain rules
-* Trained production models
+* Production-trained models
 * Proprietary datasets
-* Enforcement logic
+* Enforcement or action logic
 
 ---
 
@@ -175,34 +219,31 @@ The public Decision Plane repository **intentionally excludes**:
 Decision Plane explicitly excludes:
 
 * Autonomous policy execution
-* Self-modifying behavior
-* Automated retraining
+* Self-modifying systems
+* Automated retraining pipelines
 * Real-time inference guarantees
+* Agent-based orchestration
 
-These exclusions are **design constraints**, not deferred work.
+These are **design constraints**, not deferred work.
 
 ---
 
 ## Architectural Stability
 
-This architecture is considered **stable** for the current inspection layer (V1).
+This architecture is considered **stable for v1.x**.
 
-Future evolution is expected through:
+Future evolution is expected via:
 
-* Configuration
-* Extension
-* Private specialization
+* Additive features
+* Extended read models
+* Domain-specific forks
 
 Not through breaking architectural shifts.
 
 ---
 
-### Architectural Positioning
+## Final Statement
 
-Decision Plane is:
+Decision Plane exists to demonstrate **how decision-centric ML systems should be built** when correctness, auditability, and inspection matter more than speed or automation.
 
-* A **decision infrastructure framework**
-* A **signal-first system**
-* An **inspection and governance layer**
-
-It is **not** an automation engine, an agent system, or a policy executor.
+If a proposed change violates the principles in this document, the change is rejected.
