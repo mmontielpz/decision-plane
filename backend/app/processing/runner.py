@@ -1,4 +1,5 @@
 import uuid
+import json
 from pathlib import Path
 from datetime import datetime
 
@@ -8,12 +9,16 @@ from app.processing.schemas import ProcessedRecord, FeatureRecord
 PROCESSOR_VERSION = "0.2.0"
 FEATURE_VERSION = "v1"
 
+
+# ---------------------------------------------------------
+# Lineage emission
+# ---------------------------------------------------------
 def _emit_processing_step(
     *,
     run_id: str,
     document_id: str,
     step_name: str,
-    status: str,
+    status: str,  # started | completed | failed
     metadata: dict | None = None,
     error_message: str | None = None,
 ):
@@ -48,6 +53,9 @@ def _emit_processing_step(
     conn.close()
 
 
+# ---------------------------------------------------------
+# Processing run lifecycle
+# ---------------------------------------------------------
 def _create_processing_run() -> str:
     run_id = str(uuid.uuid4())
     now = datetime.utcnow().isoformat()
@@ -93,6 +101,9 @@ def _complete_processing_run(run_id: str, status: str):
     conn.close()
 
 
+# ---------------------------------------------------------
+# Document selection & state
+# ---------------------------------------------------------
 def _fetch_unprocessed_documents(limit: int = 1):
     conn = get_connection()
     cursor = conn.cursor()
@@ -118,10 +129,10 @@ def _update_document_status(
     document_id: str,
     run_id: str,
     status: str,
-    processed_path: str = None,
-    feature_path: str = None,
-    error_code: str = None,
-    error_message: str = None,
+    processed_path: str | None = None,
+    feature_path: str | None = None,
+    error_code: str | None = None,
+    error_message: str | None = None,
 ):
     now = datetime.utcnow().isoformat()
 
@@ -166,6 +177,9 @@ def _update_document_status(
     conn.close()
 
 
+# ---------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------
 def _read_raw_text(raw_path: Path) -> str:
     return raw_path.read_text(encoding="utf-8")
 
@@ -178,6 +192,9 @@ def _build_features(text: str) -> dict:
     }
 
 
+# ---------------------------------------------------------
+# Batch runner
+# ---------------------------------------------------------
 def run_batch(limit: int = 1):
     run_id = _create_processing_run()
     run_status = "completed"
@@ -194,6 +211,14 @@ def run_batch(limit: int = 1):
                     / document_id
                 )
 
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="read_raw_text",
+                    status="started",
+                    metadata={"raw_path": str(raw_path)},
+                )
+
                 raw_files = list(raw_path.glob("*"))
                 if not raw_files:
                     raise FileNotFoundError("Raw file not found")
@@ -205,8 +230,26 @@ def run_batch(limit: int = 1):
                     run_id=run_id,
                     document_id=document_id,
                     step_name="read_raw_text",
-                    status="success",
-                    metadata={"path": str(raw_file)},
+                    status="completed",
+                    metadata={"file": str(raw_file)},
+                )
+
+                processed_dir = (
+                    Path("data/processed")
+                    / ingestion_ts.split("T")[0]
+                    / source_system
+                    / document_id
+                )
+                processed_dir.mkdir(parents=True, exist_ok=True)
+
+                processed_path = processed_dir / "processed.json"
+
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="write_processed_record",
+                    status="started",
+                    metadata={"output": str(processed_path)},
                 )
 
                 processed_record = ProcessedRecord(
@@ -220,34 +263,16 @@ def run_batch(limit: int = 1):
                     raw_path=str(raw_file),
                 )
 
+                processed_path.write_text(processed_record.model_dump_json())
+
                 _emit_processing_step(
                     run_id=run_id,
                     document_id=document_id,
                     step_name="write_processed_record",
-                    status="success",
-                    metadata={"processed_path": str(processed_path)},
+                    status="completed",
                 )
-
-                processed_dir = (
-                    Path("data/processed")
-                    / ingestion_ts.split("T")[0]
-                    / source_system
-                    / document_id
-                )
-                processed_dir.mkdir(parents=True, exist_ok=True)
-
-                processed_path = processed_dir / "processed.json"
-                processed_path.write_text(processed_record.model_dump_json())
 
                 features = _build_features(text)
-
-                feature_record = FeatureRecord(
-                    document_id=document_id,
-                    feature_timestamp=datetime.utcnow(),
-                    feature_version=FEATURE_VERSION,
-                    features=features,
-                    processed_path=str(processed_path),
-                )
 
                 feature_dir = (
                     Path("data/features")
@@ -258,7 +283,31 @@ def run_batch(limit: int = 1):
                 feature_dir.mkdir(parents=True, exist_ok=True)
 
                 feature_path = feature_dir / f"{document_id}.json"
+
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="build_features",
+                    status="started",
+                    metadata={"feature_path": str(feature_path)},
+                )
+
+                feature_record = FeatureRecord(
+                    document_id=document_id,
+                    feature_timestamp=datetime.utcnow(),
+                    feature_version=FEATURE_VERSION,
+                    features=features,
+                    processed_path=str(processed_path),
+                )
+
                 feature_path.write_text(feature_record.model_dump_json())
+
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="build_features",
+                    status="completed",
+                )
 
                 _update_document_status(
                     document_id=document_id,
@@ -270,6 +319,15 @@ def run_batch(limit: int = 1):
 
             except Exception as e:
                 run_status = "partial"
+
+                _emit_processing_step(
+                    run_id=run_id,
+                    document_id=document_id,
+                    step_name="processing_failed",
+                    status="failed",
+                    error_message=str(e),
+                )
+
                 _update_document_status(
                     document_id=document_id,
                     run_id=run_id,
