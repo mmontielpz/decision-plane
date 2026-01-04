@@ -22,3 +22,18 @@ def get_document_detail(document_id: str):
         raise HTTPException(status_code=404, detail="Document not found")
 
     return doc
+
+@router.get("/{document_id}/replay")
+def get_document_replay(document_id: str):
+    """
+    Document replay endpoint (v1).
+
+    Contract:
+    - Endpoint exists
+    - Replay is intentionally unavailable in v1
+    - Must return controlled 404 with explicit reason
+    """
+    raise HTTPException(
+        status_code=404,
+        detail="Replay not available for this document",
+    )
