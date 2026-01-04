@@ -199,6 +199,13 @@ def run_batch(limit: int = 1):
     run_id = _create_processing_run()
     run_status = "completed"
 
+    _emit_processing_step(
+        run_id=run_id,
+        document_id="__run__",
+        step_name="run_started",
+        status="success",
+    )
+
     try:
         documents = _fetch_unprocessed_documents(limit=limit)
 
