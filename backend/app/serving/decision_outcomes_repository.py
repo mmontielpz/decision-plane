@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Dict
+from typing import List, Dict, Optional
 from app.db.database import get_connection
 
 
@@ -159,3 +159,108 @@ def persist_decision_outcome_v1(
 
     conn.commit()
     conn.close()
+
+
+def list_decision_outcomes_v1(limit: int = 50) -> List[Dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            window_start,
+            window_end,
+            model_version,
+            feature_version,
+            threshold,
+            n_total,
+            n_accept,
+            n_review,
+            total_cost,
+            created_at
+        FROM decision_outcomes
+        ORDER BY created_at DESC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return [
+        {
+            "window_start": r[0],
+            "window_end": r[1],
+            "model_version": r[2],
+            "feature_version": r[3],
+            "threshold": r[4],
+            "n_total": r[5],
+            "n_accept": r[6],
+            "n_review": r[7],
+            "total_cost": r[8],
+            "created_at": r[9],
+        }
+        for r in rows
+    ]
+
+
+def get_decision_outcome_v1(
+    *,
+    window_start: str,
+    window_end: str,
+    model_version: str,
+    feature_version: str,
+    threshold: float,
+) -> Optional[Dict]:
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            window_start,
+            window_end,
+            model_version,
+            feature_version,
+            threshold,
+            n_total,
+            n_accept,
+            n_review,
+            total_cost,
+            created_at
+        FROM decision_outcomes
+        WHERE
+            window_start = ?
+            AND window_end = ?
+            AND model_version = ?
+            AND feature_version = ?
+            AND threshold = ?
+        """,
+        (
+            window_start,
+            window_end,
+            model_version,
+            feature_version,
+            threshold,
+        ),
+    )
+
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        return None
+
+    return {
+        "window_start": row[0],
+        "window_end": row[1],
+        "model_version": row[2],
+        "feature_version": row[3],
+        "threshold": row[4],
+        "n_total": row[5],
+        "n_accept": row[6],
+        "n_review": row[7],
+        "total_cost": row[8],
+        "created_at": row[9],
+    }
