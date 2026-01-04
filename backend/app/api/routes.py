@@ -10,7 +10,11 @@ from app.ingestion.routes import router as ingestion_router
 # -------------------------
 from app.api.product.documents import router as product_documents_router
 from app.api.product.review_queue import router as review_queue_router
-from app.api.product.replay import router as replay_router
+
+# -------------------------
+# Replay / inspection routers
+# -------------------------
+from app.api.replay.routes import router as replay_router
 
 # -------------------------
 # Dashboard / summary routers
@@ -33,6 +37,8 @@ router.include_router(ingestion_router)
 # Product-facing endpoints (UI, users)
 router.include_router(product_documents_router)
 router.include_router(review_queue_router)
+
+# Replay / inspection endpoints (read-only)
 router.include_router(replay_router)
 
 # Dashboard / product summary endpoints
