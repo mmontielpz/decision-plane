@@ -1,5 +1,21 @@
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from app.db.database import get_connection
+from app.replay.runner import ReplayRunner
+
+
+def get_replay_for_run(
+    *, run_id: int, new_threshold: float
+) -> List[Dict]:
+    """
+    Read-only decision replay for an existing prediction run.
+
+    Guarantees:
+    - No database writes
+    - Deterministic output
+    - Pure analytical view
+    """
+    runner = ReplayRunner(new_threshold=new_threshold)
+    return runner.replay_run(run_id=run_id)
 
 
 def get_document_replay(document_id: str) -> Optional[Dict[str, Any]]:
