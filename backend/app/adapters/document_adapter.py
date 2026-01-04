@@ -2,6 +2,7 @@
 
 from app.db.database import get_connection
 from app.serving.document_detail_repository import get_document_detail
+from app.serving.replay_repository import get_document_replay
 
 
 VISIBLE_PROCESSING_STATUSES = ("processed", "indexed")
@@ -69,3 +70,12 @@ class DocumentAdapter:
         or by the calling endpoint (404 if not visible).
         """
         return get_document_detail(document_id)
+
+    def get_document_replay(self, document_id: str):
+        """
+        Replay view for a document.
+
+        Delegates to replay read-model.
+        Returns None when replay is not available.
+        """
+        return get_document_replay(document_id)
