@@ -33,3 +33,43 @@ def list_processing_steps_for_document(document_id: str) -> list[dict]:
         }
         for r in rows
     ]
+
+
+def record_processing_step(
+    *,
+    document_id: str,
+    run_id: str,
+    step_name: str,
+    status: str,
+    metadata_json: str | None = None,
+    error_message: str | None = None,
+):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO processing_steps (
+            document_id,
+            run_id,
+            step_name,
+            status,
+            metadata_json,
+            error_message,
+            created_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            document_id,
+            run_id,
+            step_name,
+            status,
+            metadata_json,
+            error_message,
+            datetime.utcnow().isoformat(),
+        ),
+    )
+
+    conn.commit()
+    conn.close()
