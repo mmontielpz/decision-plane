@@ -21,6 +21,17 @@ class ProcessingInfoV1(BaseModel):
         extra = "forbid"
 
 
+class ProcessingStepV1(BaseModel):
+    step_name: str
+    status: str
+    created_at: str
+    error_message: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+    class Config:
+        extra = "forbid"
+
+
 class ArtifactV1(BaseModel):
     artifact_type: str
     content_ref: str
@@ -56,6 +67,9 @@ class DocumentDetailV1(BaseModel):
 
     latest_prediction: Optional[LatestPredictionV1]
     review_reason: Optional[str]
+
+    # NEW — explicit lineage exposure
+    processing_lineage: List[ProcessingStepV1] = []
 
     class Config:
         extra = "forbid"
