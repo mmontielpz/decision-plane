@@ -1,5 +1,5 @@
 from typing import Optional, Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 ReviewReason = Literal["low_confidence", "unknown", "missing_prediction"]
@@ -15,5 +15,6 @@ class ReviewQueueItemV1(BaseModel):
     threshold: Optional[float]
     last_activity_at: Optional[str]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )

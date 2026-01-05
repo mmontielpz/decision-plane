@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ExplanationSignalV1(BaseModel):
@@ -8,8 +8,10 @@ class ExplanationSignalV1(BaseModel):
     confidence: Optional[float]
     origin: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+
+    )
 
 
 class ExplanationPredictionV1(BaseModel):
@@ -18,16 +20,20 @@ class ExplanationPredictionV1(BaseModel):
     threshold: float
     decision: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+
+    )
 
 
 class ExplanationProcessingStepV1(BaseModel):
     step_name: str
     status: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+
+    )
 
 
 class DocumentExplanationV1(BaseModel):
@@ -45,5 +51,7 @@ class DocumentExplanationV1(BaseModel):
     prediction: Optional[ExplanationPredictionV1]
     processing_steps: List[ExplanationProcessingStepV1]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+
+    )

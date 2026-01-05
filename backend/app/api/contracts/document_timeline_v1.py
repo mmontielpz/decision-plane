@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class TimelineEventV1(BaseModel):
@@ -8,13 +8,15 @@ class TimelineEventV1(BaseModel):
     description: str
     metadata: Optional[dict]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
 
 
 class DocumentTimelineV1(BaseModel):
     document_id: str
     events: List[TimelineEventV1]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )

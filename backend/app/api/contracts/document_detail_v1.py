@@ -1,5 +1,5 @@
 from typing import Optional, List, Dict, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class LatestPredictionV1(BaseModel):
@@ -7,8 +7,10 @@ class LatestPredictionV1(BaseModel):
     confidence: float
     model_version: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
 
 
 class ProcessingInfoV1(BaseModel):
@@ -17,8 +19,9 @@ class ProcessingInfoV1(BaseModel):
     feature_path: Optional[str]
     updated_at: Optional[str]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
 
 
 class ProcessingStepV1(BaseModel):
@@ -28,8 +31,9 @@ class ProcessingStepV1(BaseModel):
     error_message: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
 
 
 class ArtifactV1(BaseModel):
@@ -37,8 +41,9 @@ class ArtifactV1(BaseModel):
     content_ref: str
     created_at: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
 
 
 class SignalV1(BaseModel):
@@ -47,9 +52,9 @@ class SignalV1(BaseModel):
     confidence: Optional[float]
     created_at: str
 
-    class Config:
-        extra = "forbid"
-
+    model_config = ConfigDict(
+        extra="forbid"
+    )
 
 class DocumentDetailV1(BaseModel):
     """
@@ -71,5 +76,6 @@ class DocumentDetailV1(BaseModel):
     # NEW — explicit lineage exposure
     processing_lineage: List[ProcessingStepV1] = []
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
