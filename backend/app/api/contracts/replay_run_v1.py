@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ReplayDecisionV1(BaseModel):
@@ -13,5 +13,6 @@ class ReplayDecisionV1(BaseModel):
 
     changed: bool
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )

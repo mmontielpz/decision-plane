@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class DashboardSummaryV1(BaseModel):
@@ -11,5 +11,6 @@ class DashboardSummaryV1(BaseModel):
     documents_needing_review: int
     latest_activity_at: Optional[str]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )

@@ -1,13 +1,15 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class ReplayArtifactV1(BaseModel):
     artifact_type: str
     content_ref: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
 
 
 class ReplayProcessingStepV1(BaseModel):
@@ -17,8 +19,9 @@ class ReplayProcessingStepV1(BaseModel):
     metadata_json: Optional[str]
     error_message: Optional[str]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
 
 
 class ReplayPredictionV1(BaseModel):
@@ -28,8 +31,10 @@ class ReplayPredictionV1(BaseModel):
     model_version: str
     created_at: str
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
+
 
 
 class DocumentReplayV1(BaseModel):
@@ -46,5 +51,6 @@ class DocumentReplayV1(BaseModel):
 
     prediction: Optional[ReplayPredictionV1]
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(
+        extra="forbid"
+    )
