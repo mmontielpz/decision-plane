@@ -4,17 +4,17 @@
 
 This document defines the **authoritative architecture** of **Decision Plane**.
 
-It supersedes all phase-based notes, exploratory diagrams, and intermediate design discussions.
-Its purpose is to describe **what the system is**, not how it evolved.
+It supersedes all exploratory notes, phase-based documents, and intermediate design discussions.
+Its purpose is to define **what the system is and is not**, independent of any domain, customer, or business objective.
 
 Decision Plane is a **decision infrastructure framework**.
-It is **not** a domain product, not an automation engine, and not an agent system.
+It is **not** a domain product, not an automation engine, and not a policy executor.
 
 ---
 
 ## Architectural Positioning
 
-Decision Plane exists to support **inspection, governance, and reasoning over decisions** produced from document-centric machine learning pipelines.
+Decision Plane exists to support **inspection, governance, and reasoning** over decisions produced by document-centric machine learning pipelines.
 
 It is intentionally positioned as:
 
@@ -22,8 +22,16 @@ It is intentionally positioned as:
 * inspection-oriented
 * deterministic
 * replayable
+* audit-driven
 
-It does **not** execute policies, enforce actions, or automate outcomes.
+Decision Plane **does not**:
+
+* decide what actions to take
+* enforce outcomes
+* optimize business objectives
+* automate workflows
+
+Those responsibilities belong **outside** the framework.
 
 ---
 
@@ -31,13 +39,13 @@ It does **not** execute policies, enforce actions, or automate outcomes.
 
 The system is built around the following **non-negotiable principles**:
 
-* Determinism over implicit behavior
-* Auditability over automation
-* Explicit state transitions
-* Separation of concerns across layers
-* Product-facing clarity over internal convenience
+* **Determinism over implicit behavior**
+* **Auditability over automation**
+* **Explicit state transitions**
+* **Separation of concerns across layers**
+* **Product-facing clarity over internal convenience**
 
-All components and features must conform to these principles.
+Any component or feature that violates these principles is **out of scope**.
 
 ---
 
@@ -66,12 +74,12 @@ Serving API
 Inspection Interface
 ```
 
-Key properties:
+Key invariants:
 
 * Each stage produces **explicit artifacts**
 * Each stage persists **explicit state**
 * No stage mutates upstream outputs
-* All transitions are auditable
+* All transitions are timestamped and auditable
 
 ---
 
@@ -110,7 +118,7 @@ The ingestion boundary defines the **start of determinism**.
 * Deterministic
 * Replayable from raw inputs
 
-All processing steps emit **explicit step-level lineage**.
+Processing produces **artifacts**, not decisions.
 
 ---
 
@@ -128,7 +136,7 @@ All processing steps emit **explicit step-level lineage**.
 * Read-only for inspection
 * Fully ordered and timestamped
 
-This layer exists to answer **“what happened and why”**, not to optimize execution.
+This layer exists to answer **“what happened and why”**, not **“what should happen next.”**
 
 ---
 
@@ -148,6 +156,8 @@ This layer exists to answer **“what happened and why”**, not to optimize exe
 
 This layer **produces signals, not decisions**.
 
+Signals are informational and domain-agnostic.
+
 ---
 
 ### 5. Review and Indexing Layer
@@ -164,16 +174,20 @@ This layer **produces signals, not decisions**.
 * Non-authoritative
 * Replaceable without affecting core state
 
+This layer exists for **inspection efficiency**, not correctness.
+
 ---
 
 ### 6. Serving Layer (API)
 
-The system exposes **strict, versioned APIs** for:
+Decision Plane exposes **strict, versioned APIs** for:
 
 * Document listing
 * Document detail inspection
 * Review queue access
 * Dashboard summaries
+* Deterministic replay (read-only)
+* Explanation and timeline endpoints
 
 APIs are treated as **product contracts**, not internal plumbing.
 
@@ -195,36 +209,50 @@ The inspection interface enables:
 * No embedded business rules
 * No autonomous behavior
 
+The UI exists to **support human reasoning**, not to replace it.
+
+---
+
+## Open-Source Scope Boundary
+
+Decision Plane **includes**:
+
+* Architecture and system guarantees
+* Deterministic ingestion and processing pipelines
+* Processing lineage and audit trails
+* Signal generation and uncertainty indicators
+* Read-only replay and evaluation mechanisms
+* Inspection-oriented APIs and contracts
+* Synthetic or mock data for testing
+
+Decision Plane **excludes**:
+
+* Policy enforcement or action logic
+* Business-specific cost optimization
+* Automated decision execution
+* Trained production models or learned heuristics
+* Domain-specific rules or thresholds
+* Organizational workflow logic
+* Real or proprietary datasets
+
+These exclusions are **intentional architectural constraints**, not deferred work.
+
 ---
 
 ## Configuration and Extensibility
 
-Domain-specific behavior is introduced only through:
+Domain-specific behavior may be introduced **only** through:
 
 * Configuration
 * Feature flags
 * Controlled forks
+* Private extensions
 
-The public repository **intentionally excludes**:
+The public repository intentionally avoids encoding:
 
-* Domain rules
-* Production-trained models
-* Proprietary datasets
-* Enforcement or action logic
-
----
-
-## Explicit Non-Goals
-
-Decision Plane explicitly excludes:
-
-* Autonomous policy execution
-* Self-modifying systems
-* Automated retraining pipelines
-* Real-time inference guarantees
-* Agent-based orchestration
-
-These are **design constraints**, not deferred work.
+* domain intent
+* business economics
+* operational strategy
 
 ---
 
@@ -232,13 +260,17 @@ These are **design constraints**, not deferred work.
 
 This architecture is considered **stable for v1.x**.
 
-Future evolution is expected via:
+Future evolution is expected through:
 
-* Additive features
-* Extended read models
-* Domain-specific forks
+* Additive read models
+* Expanded inspection capabilities
+* Extended lineage and replay views
 
-Not through breaking architectural shifts.
+Not through:
+
+* automated decision logic
+* self-modifying systems
+* agent-based orchestration
 
 ---
 
@@ -246,4 +278,5 @@ Not through breaking architectural shifts.
 
 Decision Plane exists to demonstrate **how decision-centric ML systems should be built** when correctness, auditability, and inspection matter more than speed or automation.
 
-If a proposed change violates the principles in this document, the change is rejected.
+If a proposed change causes the system to **decide what should happen**, rather than **explain what happened**, the change is **out of scope**.
+

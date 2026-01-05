@@ -2,11 +2,11 @@
 
 ## Purpose
 
-This document defines the **formal guarantees** provided by **Decision Plane v1.x**.
+This document defines the **formal, non-negotiable system guarantees** provided by **Decision Plane v1.x**.
 
-These guarantees are **contractual properties of the system**, not implementation details or best-effort behaviors.
+These guarantees are **architectural contracts**, not implementation conveniences or best-effort behaviors.
 
-Any change that violates a guarantee defined here is considered a **breaking architectural regression**.
+Any change that violates a guarantee defined here constitutes a **breaking architectural regression** and requires a **major version bump**.
 
 ---
 
@@ -14,13 +14,13 @@ Any change that violates a guarantee defined here is considered a **breaking arc
 
 The guarantees in this document apply to:
 
-* Core data models
-* Processing execution
+* Core data models and persisted state
+* Processing execution and lineage
 * Decision signal generation
-* Inspection and replay
-* Public APIs
+* Inspection, replay, and evaluation
+* Public, product-facing APIs
 
-They do **not** apply to performance, throughput, or domain-specific accuracy.
+They explicitly **do not apply** to performance characteristics, throughput, latency, or domain-specific accuracy.
 
 ---
 
@@ -30,23 +30,23 @@ They do **not** apply to performance, throughput, or domain-specific accuracy.
 
 Given the same:
 
-* Input artifact
-* Configuration
-* Processing code version
+* input artifact
+* configuration
+* processing code version
 
-Decision Plane guarantees the **same outputs**.
+Decision Plane guarantees **identical outputs**.
 
 **Implications**
 
-* Processing is deterministic by design
 * No hidden randomness
-* No time-dependent logic in outputs
+* No implicit time-based behavior
+* No dependency on external mutable state
 
 **Enforced By**
 
-* Explicit versioning
+* Explicit versioning of processors and features
 * Immutable raw artifacts
-* Recorded processing steps
+* Persisted step-level execution records
 
 ---
 
@@ -54,18 +54,18 @@ Decision Plane guarantees the **same outputs**.
 
 **Definition**
 
-Once ingested, raw artifacts are **never mutated**.
+Once ingested, raw input artifacts are **never modified or replaced**.
 
 **Implications**
 
-* Raw inputs serve as the single source of truth
+* Raw inputs are the single source of truth
 * All downstream artifacts are derived
 * Replay is always possible
 
 **Enforced By**
 
 * Write-once raw storage
-* No update paths to raw artifacts
+* No update paths for raw artifacts
 
 ---
 
@@ -73,26 +73,26 @@ Once ingested, raw artifacts are **never mutated**.
 
 **Definition**
 
-Every document progresses through **explicit, persisted states**.
+Every document progresses through **explicit, persisted lifecycle states**.
 
-Examples:
+Examples include (but are not limited to):
 
-* ingested
-* processed
-* indexed
-* triaged
+* `ingested`
+* `processed`
+* `indexed`
+* `triaged`
 
-No implicit transitions are allowed.
+Implicit or inferred state transitions are not permitted.
 
 **Implications**
 
-* State can be inspected at any time
-* No hidden lifecycle behavior
+* Document state is inspectable at all times
+* Lifecycle behavior is transparent and auditable
 
 **Enforced By**
 
-* `document_processing_status` table
-* Explicit status updates
+* `document_processing_status` as an authoritative state table
+* Explicit, persisted state updates
 
 ---
 
@@ -100,22 +100,22 @@ No implicit transitions are allowed.
 
 **Definition**
 
-Every processing run records **step-level lineage**.
+Every processing run records **step-level lineage events**.
 
 Each step includes:
 
 * run identifier
 * document identifier
 * step name
-* status
+* execution status
 * timestamp
-* optional metadata
+* optional structured metadata
 
 **Implications**
 
 * Full audit trail of execution
 * Failure attribution is possible
-* Partial success is observable
+* Partial success and degraded runs are observable
 
 **Enforced By**
 
@@ -130,28 +130,29 @@ Each step includes:
 
 Any document can be **reprocessed deterministically** from raw input.
 
-Replay produces:
+Replay always produces:
 
-* New processing runs
-* New lineage
-* New derived artifacts
+* new processing runs
+* new lineage records
+* new derived artifacts
 
-Without modifying historical state.
+Historical state is **never modified or overwritten**.
 
 **Implications**
 
-* Experiments are safe
-* Comparisons across versions are possible
+* Experiments are safe and isolated
+* Cross-version comparisons are possible
+* Historical decisions remain intact
 
 **Enforced By**
 
 * Immutable raw data
-* Versioned processing
-* Append-only lineage
+* Versioned processing logic
+* Append-only lineage records
 
 ---
 
-## Guarantee 6 — Signal-Only Decisions
+## Guarantee 6 — Signal-Only Decision Outputs
 
 **Definition**
 
@@ -159,20 +160,22 @@ Decision Plane **never executes actions**.
 
 It produces:
 
-* Signals
-* Scores
-* Confidence indicators
+* signals
+* scores
+* confidence indicators
+* uncertainty flags
 
-It does **not**:
+It explicitly does **not**:
 
-* Enforce policies
-* Trigger workflows
-* Take autonomous actions
+* enforce policies
+* trigger workflows
+* automate outcomes
+* make final decisions
 
 **Implications**
 
-* Humans or downstream systems remain in control
-* Governance is externalized
+* Human or downstream systems retain control
+* Governance and enforcement are externalized
 
 ---
 
@@ -180,18 +183,18 @@ It does **not**:
 
 **Definition**
 
-All dashboards, queues, and views are **derived read models**.
+All dashboards, queues, summaries, and inspection views are **derived read models**.
 
 They are:
 
-* Non-authoritative
-* Rebuildable
-* Replaceable
+* non-authoritative
+* rebuildable from persisted state
+* replaceable without impacting correctness
 
 **Implications**
 
-* UI failures do not corrupt core state
-* Indexing strategies can evolve independently
+* UI or indexing failures do not corrupt core data
+* Presentation concerns remain decoupled from truth
 
 ---
 
@@ -199,12 +202,14 @@ They are:
 
 **Definition**
 
-Public APIs are governed by **explicit versioned contracts**.
+Public APIs are governed by **explicit, versioned contracts**.
 
 Breaking changes require:
 
-* New version identifiers
-* Parallel support when possible
+* a new version identifier
+* parallel support when feasible
+
+Stub endpoints returning intentional `404` responses are valid for v1 when behavior is explicitly unimplemented.
 
 **Implications**
 
@@ -217,14 +222,15 @@ Breaking changes require:
 
 **Definition**
 
-The system is auditable **without reconstruction**.
+The system is auditable **without reconstruction or external correlation**.
 
-Audit data is stored as part of normal execution.
+Audit-relevant data is captured as part of normal execution.
 
 **Implications**
 
 * No post-hoc log stitching
-* No external observability dependency
+* No reliance on external observability systems
+* Audit trails are first-class data
 
 ---
 
@@ -232,13 +238,14 @@ Audit data is stored as part of normal execution.
 
 Decision Plane explicitly does **not** guarantee:
 
-* Model accuracy
-* Real-time latency
-* Cost optimization
-* Throughput
-* Autonomous correctness
+* model accuracy
+* business optimality
+* real-time latency
+* cost efficiency
+* throughput or scalability
+* autonomous correctness
 
-These are domain or deployment concerns.
+These concerns are domain-, deployment-, or policy-specific.
 
 ---
 
@@ -249,7 +256,7 @@ This document applies to:
 * Decision Plane v1.0
 * Decision Plane v1.x
 
-Any change to these guarantees requires a **major version bump**.
+Any change to these guarantees requires a **major version increment**.
 
 ---
 
@@ -257,4 +264,6 @@ Any change to these guarantees requires a **major version bump**.
 
 Decision Plane is designed to be **predictable, inspectable, and governable**.
 
-If a proposed optimization compromises determinism, auditability, or replayability, it is rejected—even if it improves performance.
+If a proposed optimization compromises determinism, auditability, or replayability, it is rejected—even if it improves performance, usability, or convenience.
+
+These constraints are the system’s value proposition.

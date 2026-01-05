@@ -1,47 +1,54 @@
 # Decision Plane
 
-*A Framework for Auditable, Human-in-the-Loop ML Decision Systems*
+*A Framework for Auditable ML Decision Inspection Systems*
+
+---
 
 ## Overview
 
-This repository implements **Decision Plane**, a framework for building **auditable, governed machine learning decision systems**.
+**Decision Plane** is an open-source framework for building **auditable, deterministic, and inspection-oriented machine learning decision infrastructure**.
 
-The focus of Decision Plane is not a single model or task, but the **design, implementation, and operation of a production-grade decision infrastructure** that supports document-centric workflows under uncertainty and asymmetric risk.
+The framework is not centered around a single model, task, or business use case.
+Instead, it focuses on the **engineering of decision-inspection-centric ML systems** where correctness, traceability, replayability, and inspection matter more than automation or raw performance.
 
-The system covers the full lifecycle required to move from raw, unstructured inputs to **explainable, reproducible, and traceable decision signals**, exposed through a minimal, non-autonomous product layer.
+Decision Plane treats **decision inspection** as a first-class problem.
+
+It explains **what happened**, **how it happened**, and **why uncertainty exists** — without deciding what actions should be taken.
 
 ---
 
 ## Problem Statement
 
-Organizations increasingly rely on ML systems to support operational decisions.
-In practice, failures rarely originate from obvious model errors.
+Organizations increasingly rely on ML systems to support operational workflows involving documents and unstructured inputs.
+
+In practice, failures rarely originate from obvious model bugs.
 
 Instead, risk accumulates through:
 
 * incomplete or ambiguous information
 * noisy or low-quality inputs
 * inconsistent structure across records
-* delayed or partial feedback
-* gradual degradation of system behavior
+* delayed, partial, or noisy feedback
+* gradual behavioral drift over time
 
-Many ML solutions frame this as a static classification problem.
+Many ML solutions frame this as a static prediction problem.
 
-In real systems, the challenge is **decision making under uncertainty**, where:
+Real systems face a different challenge:
+**decision inspection and reasoning under uncertainty**, where:
 
 * errors have asymmetric cost
-* labels are noisy, incomplete, or unavailable
-* data distributions evolve over time
+* labels are incomplete or delayed
+* distributions evolve
 * auditability and replay matter
-* automation must be constrained
+* automation must be explicitly constrained
 
-Decision Plane addresses this gap by treating **decision infrastructure** as a first-class engineering problem.
+Decision Plane addresses this gap by treating **decision infrastructure** — not model accuracy — as the primary engineering concern.
 
 ---
 
 ## Project Motivation
 
-Decision Plane exists to demonstrate how **real ML decision systems are engineered**, not how models are trained in isolation.
+Decision Plane exists to demonstrate how **production-grade ML decision systems should be engineered**, not how models are trained in isolation.
 
 It intentionally avoids:
 
@@ -49,72 +56,85 @@ It intentionally avoids:
 * notebook-only workflows
 * accuracy-only evaluation
 * model-centric abstractions
+* autonomous decision execution
 
 Instead, it emphasizes:
 
 * explicit system boundaries
 * deterministic processing
-* auditability and replay
-* controlled CI/CD
-* incremental, disciplined product exposure
+* step-level auditability
+* replayable evaluation
+* contract-first APIs
+* disciplined CI/CD
+
+This repository is an **engineering reference**, not a benchmark or demo.
 
 ---
 
 ## System Scope
 
-Decision Plane is implemented as an **integrated decision infrastructure**, covering:
+Decision Plane implements an integrated **decision inspection infrastructure**, covering:
 
 1. **Input Ingestion**
-   Deterministic, idempotent ingestion of unstructured inputs.
+   Deterministic, idempotent ingestion of unstructured artifacts.
 
 2. **Raw and Processed Storage**
    Clear separation of raw inputs, processed artifacts, and metadata.
 
 3. **Processing and Feature Materialization**
-   Reproducible pipelines for text extraction outputs, parsing, and feature extraction.
+   Reproducible pipelines for extraction, parsing, and feature generation.
 
-4. **Decisions and Signals**
-   Generic classification outputs and explicit quality or risk indicators.
+4. **Decision Signals**
+   Generic classification outputs and explicit uncertainty or risk indicators.
+   *Signals are informational, not prescriptive.*
 
 5. **Serving**
-   Batch-first, auditable serving of decision outputs.
+   Batch-first, auditable serving of signals and inspection views.
 
 6. **Monitoring and Analysis**
-   Drift detection, error analysis, and replayable decision evaluation.
+   Post-hoc, read-only analytical evaluation of signals, including drift and outcome analysis.
 
-7. **Containerization**
-   Reproducible runtime environments using Docker.
+7. **Deterministic Replay**
+   Re-evaluation of historical executions under alternative parameters without modifying original state.
 
-8. **CI/CD**
-   Automated testing, build validation, and controlled artifact delivery.
+8. **CI/CD and Containerization**
+   Reproducible builds, automated tests, and controlled delivery.
 
-Decision Plane acts as **infrastructure**, not an autonomous decision maker.
+Decision Plane is **infrastructure**, not an autonomous decision maker.
 
 ---
 
-## Product Layer
+## Inspection Interface (V1)
 
-On top of the Decision Plane infrastructure, this repository exposes a **minimal decision inspection layer (V1)** that allows users to:
+On top of the core infrastructure, Decision Plane exposes a **minimal inspection interface (V1)** intended for exploration and inspection of persisted system state.
 
-* ingest and explore inputs
+The inspection interface allows users to:
+
+* ingest and explore documents
 * inspect processed artifacts and metadata
-* review decision outputs and signals
-* understand uncertainty and risk explicitly
-* prioritize human review where needed
+* inspect decision signals and uncertainty
+* understand processing lineage
 
-The product layer is intentionally **non-autonomous** and preserves human oversight by design.
+All inspection-facing endpoints are:
+
+* **read-only with respect to decision logic**
+* **contract-first and versioned**
+* **non-autonomous by design**
+
+The inspection interface exists to **support understanding**, not to execute decisions.
 
 ---
 
 ## Evaluation Criteria
 
-The system is evaluated using multiple signals, not a single metric:
+The system is evaluated using multiple engineering signals, not a single metric:
 
-* clarity and explainability of outputs
-* robustness to noisy and evolving data
 * determinism and reproducibility
+* auditability and lineage completeness
+* clarity and explainability of signals
+* robustness to noisy and evolving data
 * observability of failure modes
-* engineering discipline across CI/CD
+* CI/CD discipline and test coverage
 
 Known limitations and trade-offs are documented explicitly.
 
@@ -122,22 +142,38 @@ Known limitations and trade-offs are documented explicitly.
 
 ## Non-Goals
 
-Decision Plane is not intended to be:
+Decision Plane is **not** intended to be:
 
 * a Kaggle-style experiment
-* a generic OCR tool
+* a generic OCR or document processing tool
 * a dashboard-heavy MLOps platform
 * an autonomous decision engine
-* a research benchmark or novel algorithm proposal
+* a policy executor or workflow orchestrator
+* an agent-based system
+* a research benchmark or algorithm proposal
+
+These exclusions are **intentional architectural constraints**, not deferred work.
 
 ---
 
 ## Status
 
-**Phases 0–5 completed**
-The Decision Plane infrastructure is fully implemented as a governed, auditable decision system, including ingestion, processing, modeling, serving, and monitoring.
+**Core architectural infrastructure implemented**
 
-**Phase 6 — Product exposure (exploratory)**
-The system can be exposed as a **Decision Plane inspection layer (V1)**, focused on usability, traceability, and explicit uncertainty signaling.
+The Decision Plane architecture is stable for **v1.x**, including ingestion, processing, lineage, signal generation, serving, replay, and inspection APIs.
 
-The project is **functionally complete at the infrastructure level** and positioned for controlled exploration of decision-centric use cases.
+Current work focuses on:
+
+* additive inspection read models
+* extended lineage and replay views
+* documentation and contribution hardening
+
+No architectural shifts toward automation or enforcement are planned.
+
+---
+
+## Final Note
+
+Decision Plane exists to demonstrate **how decision-centric ML systems should be built** when correctness, auditability, and inspection matter more than speed or automation.
+
+If a proposed change causes the system to **decide what should happen**, rather than **explain what happened**, it is **out of scope**.

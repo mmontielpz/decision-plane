@@ -45,7 +45,7 @@ Seeded datasets may include:
 
 * dummy documents
 * synthetic samples
-* simulated policies or contracts
+* simulated document structures or schemas
 * malformed or low-quality inputs
 * duplicated or inconsistent artifacts
 
@@ -111,8 +111,7 @@ Experimental outputs must not be interpreted as claims of business value or doma
 Experiments in this repository are a **tool for validating and understanding Decision Plane**.
 
 They are intentionally constrained, explicit, and reproducible.
-They provide a foundation for **private, domain-specific experimentation**
-outside the scope of the public repository.
+They provide a foundation for **private, domain-specific experimentation** outside the scope of the public repository.
 
 ---
 
@@ -142,10 +141,10 @@ When triggered, Seed V1:
 
 * creates a demo user and ingestion source
 * inserts a small set of artifacts with heterogeneous states
-* marks only processed or indexed artifacts as product-visible
+* marks only processed or indexed artifacts as inspection-visible
 * initializes processing status records
 * attaches placeholder artifacts and signals
-* enables document listing and dashboard summaries
+* enables document listing and inspection summary views
 
 Seed V1 is triggered explicitly via:
 
@@ -177,7 +176,7 @@ Its purpose is to demonstrate:
 * system structure
 * data contracts
 * operational boundaries
-* product visibility rules
+* inspection visibility rules
 
 Rather than simulating full functionality, Seed V1 ensures that:
 

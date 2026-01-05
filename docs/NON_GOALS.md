@@ -1,284 +1,164 @@
-# V1 Non-Goals and Future Evolution — Decision Plane
+# Non-Goals — Decision Plane
 
 ## Purpose
 
-This document defines:
+This document defines what **Decision Plane explicitly does NOT attempt to do**.
 
-* What **Decision Plane v1.0 explicitly does NOT attempt to do**
-* Why those exclusions are intentional
-* How future evolution is expected to happen without breaking the core
+These exclusions are **architectural constraints**, not missing features.
 
-This is a **defensive architecture document**.
+They exist to preserve determinism, auditability, and inspection-first design.
 
-If this file did not exist, the project would be misunderstood.
+If a proposed change violates a non-goal defined here, it is rejected by definition.
 
 ---
 
 ## Core Philosophy
 
-Decision Plane is designed as a **decision inspection and governance framework**.
+Decision Plane is a **decision inspection framework**, not a decision execution system.
 
-Not everything that is *possible* is *appropriate*.
-
-Non-goals are **design constraints**, not missing features.
+Non-goals are **intentional boundaries** that protect correctness and trust.
 
 ---
 
-## Explicit Non-Goals for V1
+## Explicit Non-Goals
 
-The following items are **out of scope by design** for Decision Plane v1.0.
-
-They are not “later tasks” or “nice-to-haves”.
+The following are **out of scope by design** and will not be added.
 
 ---
 
-## 1. Autonomous Decision Execution
+### 1. Autonomous Decision Execution
 
-### Not Included
+Not included:
 
-* No automatic approvals
-* No automatic rejections
-* No policy enforcement
-* No side effects beyond state recording
-
-### Why
-
-Automated execution introduces:
-
-* Irreversible outcomes
-* Hidden coupling
-* Regulatory risk
-* Accountability ambiguity
+* automatic approvals or rejections
+* policy enforcement
+* side effects beyond state recording
 
 Decision Plane produces **signals**, not actions.
 
 ---
 
-## 2. Real-Time / Online Inference
+### 2. Real-Time or Online Inference
 
-### Not Included
+Not included:
 
-* No synchronous inference APIs
-* No latency SLAs
-* No streaming pipelines
+* synchronous inference APIs
+* latency SLAs
+* streaming pipelines
 
-### Why
-
-Real-time inference:
-
-* Conflicts with determinism
-* Complicates replayability
-* Introduces hidden state
-
-Decision Plane is **batch-first and replayable**.
+The system is **batch-first and replayable**.
 
 ---
 
-## 3. Model Training Orchestration
+### 3. Model Training or Orchestration
 
-### Not Included
+Not included:
 
-* No training pipelines
-* No hyperparameter tuning
-* No model registry automation
+* training pipelines
+* hyperparameter tuning
+* automated model registry workflows
 
-### Why
-
-Training pipelines are:
-
-* Domain-specific
-* Toolchain-dependent
-* Orthogonal to inspection
-
-Decision Plane assumes **models already exist**.
+Models are assumed to exist **outside** the system.
 
 ---
 
-## 4. Automated Retraining or Self-Improvement
+### 4. Automated Retraining or Self-Modification
 
-### Not Included
+Not included:
 
-* No auto-retraining
-* No feedback loops that modify models
-* No adaptive thresholds
+* auto-retraining
+* adaptive thresholds
+* feedback loops that modify models
 
-### Why
-
-Self-modifying systems:
-
-* Break auditability
-* Obscure causality
-* Complicate accountability
-
-Learning belongs outside the inspection plane.
+Self-modifying systems break auditability.
 
 ---
 
-## 5. Business Rules or Domain Logic
+### 5. Embedded Business or Domain Logic
 
-### Not Included
+Not included:
 
-* No finance rules
-* No legal logic
-* No healthcare policies
-* No domain ontologies
-
-### Why
-
-Embedding domain logic would:
-
-* Destroy neutrality
-* Prevent reuse
-* Create implicit bias
+* finance rules
+* legal logic
+* healthcare policies
+* domain ontologies
 
 Decision Plane is **domain-agnostic by design**.
 
 ---
 
-## 6. UI-Driven Decision Logic
+### 6. UI-Driven Logic or Actions
 
-### Not Included
+Not included:
 
-* No UI-triggered actions
-* No hidden client-side rules
-
-### Why
-
-All decisions must be:
-
-* Explicit
-* Server-side
-* Persisted
+* UI-triggered actions
+* client-side decision logic
 
 The UI is strictly **read-only with respect to logic**.
 
 ---
 
-## 7. “AI Agents” or Autonomous Systems
+### 7. Agent-Based or Goal-Driven Systems
 
-### Not Included
+Not included:
 
-* No agent loops
-* No planning systems
-* No goal-driven behavior
+* agent loops
+* planning systems
+* autonomous goal pursuit
 
-### Why
-
-Agent systems violate:
-
-* Determinism
-* Explainability
-* Governance
-
-Decision Plane is not an agent framework.
+These violate determinism and explainability.
 
 ---
 
-## 8. Performance Optimization as a Primary Goal
+### 8. Performance Optimization as a Primary Objective
 
-### Not Included
+Not included:
 
-* No premature optimization
-* No parallelization tuning
-* No caching strategies
+* premature optimization
+* execution tuning
+* caching strategies as core concerns
 
-### Why
-
-Correctness > speed.
-
-Performance can be added **after correctness is proven**.
+Correctness and auditability take precedence.
 
 ---
 
-## Guardrails Against Scope Creep
+## Permanent Guardrails
 
-The following rules apply permanently:
+The following rules apply indefinitely:
 
-* No feature without a persisted artifact
-* No hidden state
-* No implicit transitions
-* No silent defaults
+* no feature without a persisted artifact
+* no hidden state
+* no implicit transitions
+* no silent defaults
 
-If a feature cannot be **audited**, it does not belong.
-
----
-
-## Expected Future Evolution (Post-V1)
-
-Future evolution is expected to happen through **extension**, not mutation.
+If a behavior cannot be audited, it does not belong.
 
 ---
 
-## Approved Future Directions
+## Permitted Extensions (Constraint-Bound)
 
-### 1. Domain Forks
+The following types of extensions are acceptable **only if** they preserve all guarantees:
 
-Examples:
+* additional deterministic processing steps
+* richer inspection read models
+* enhanced replay and comparison views
+* external systems consuming emitted signals
 
-* Finance Decision Plane
-* Legal Review Plane
-* Healthcare Inspection Plane
-
-Implemented via:
-
-* Configuration
-* Extended schemas
-* Domain-specific adapters
-
-Core remains unchanged.
+Decision Plane **never** executes policy or action logic itself.
 
 ---
 
-### 2. Pluggable Processing Steps
-
-Examples:
-
-* OCR engines
-* NLP parsers
-* Feature extractors
-
-Requirements:
-
-* Deterministic
-* Versioned
-* Lineage-recorded
-
----
-
-### 3. Enhanced Replay & Comparison
-
-Examples:
-
-* Side-by-side run comparison
-* Diff tooling
-* Regression detection
-
-Still read-only and auditable.
-
----
-
-### 4. External Policy Engines (Optional)
-
-Decision Plane may **emit signals** to:
-
-* Policy engines
-* Workflow systems
-
-But never executes policies itself.
-
----
-
-## What Will Never Change
+## Invariants
 
 The following principles are permanent:
 
-* Determinism
-* Explicit lineage
-* Replayability
-* Read-model isolation
-* Signal-first design
+* determinism
+* explicit lineage
+* replayability
+* read-model isolation
+* signal-first design
 
-Any feature violating these is rejected by definition.
+Any proposal that violates these is invalid by definition.
 
 ---
 
@@ -286,9 +166,19 @@ Any feature violating these is rejected by definition.
 
 Decision Plane is intentionally:
 
-* Conservative
-* Explicit
-* Auditable
-* Unopinionated
+* conservative
+* explicit
+* auditable
+* unopinionated
 
 Its value is **trust**, not automation.
+
+---
+
+## Final Status
+
+| File                       | Action               |
+| -------------------------- | -------------------- |
+| V1_NON_GOALS_AND_FUTURE.md | **REWRITE + RENAME** |
+| New name                   | `NON_GOALS.md`       |
+| Risk after change          | None                 |
